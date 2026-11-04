@@ -6,11 +6,12 @@ import {
   EARTH_YEAR_DAYS,
   INITIAL_PHASE,
   MOON_ORBIT_DISPLAY,
-  displayOrbitRadius,
+  displaySemiMajorAxis,
   displayRadius,
   orbitalAngle,
   rotationAngle,
 } from '../config/scale';
+import { positionAtMeanAnomaly, type KeplerOrbitShape } from './kepler';
 
 export interface BodyObject {
   id: BodyId;
@@ -24,10 +25,10 @@ export interface BodyObject {
 /** Internal handle: the public BodyObject plus what `update` and parenting need. */
 export interface PlanetRig {
   body: BodyObject;
-  /** Child of `orbitPivot`, translated out to the orbit radius. Moons attach here. */
+  /** Child of `orbitPivot`, positioned at the current orbit point. Moons attach here. */
   offset: THREE.Object3D;
-  orbitRadius: number;
-  update(tSec: number): void;
+  orbitShape: KeplerOrbitShape | null;
+  update(tSec: number): number;
   setSegments(s: TierSettings): void;
 }
 
@@ -47,9 +48,16 @@ function orbitPeriodDays(id: BodyId): number {
   return BODIES[id].physical.orbitalPeriodDays ?? EARTH_YEAR_DAYS;
 }
 
-function orbitRadiusOf(id: BodyId): number {
-  if (id === 'moon') return MOON_ORBIT_DISPLAY;
-  return displayOrbitRadius(BODIES[id].physical.distanceFromParentMkm ?? 0);
+function orbitShapeOf(id: BodyId): KeplerOrbitShape | null {
+  const orbit = BODIES[id].orbit;
+  if (!orbit) return null;
+  return {
+    semiMajorAxisDisplay: displaySemiMajorAxis(orbit.semiMajorAxisAu),
+    eccentricity: orbit.eccentricity,
+    inclinationRad: THREE.MathUtils.degToRad(orbit.inclinationDeg),
+    ascendingNodeRad: THREE.MathUtils.degToRad(orbit.longitudeOfAscendingNodeDeg),
+    argumentOfPerihelionRad: THREE.MathUtils.degToRad(orbit.argumentOfPerihelionDeg),
+  };
 }
 
 function makeGeometry(radius: number, s: TierSettings): THREE.SphereGeometry {
@@ -83,8 +91,9 @@ export function createPlanet(
 ): PlanetRig {
   const phys = BODIES[id].physical;
   const radius = displayRadius(phys.diameterKm);
-  const orbitRadius = orbitRadiusOf(id);
   const isMoon = id === 'moon';
+  const orbitShape = orbitShapeOf(id);
+  if (!isMoon && !orbitShape) throw new Error(`Missing orbit elements for ${id}`);
 
   const orbitPivot = new THREE.Group();
   orbitPivot.name = `${id}-orbit`;
@@ -92,7 +101,7 @@ export function createPlanet(
 
   const offset = new THREE.Group();
   offset.name = `${id}-offset`;
-  offset.position.x = orbitRadius;
+  if (isMoon) offset.position.x = MOON_ORBIT_DISPLAY;
   orbitPivot.add(offset);
 
   const tiltGroup = new THREE.Group();
@@ -116,15 +125,24 @@ export function createPlanet(
   const spinHours =
     phys.axialTiltDeg > 90 ? Math.abs(phys.rotationPeriodHours) : phys.rotationPeriodHours;
   const period = orbitPeriodDays(id);
-  const phase = INITIAL_PHASE[id];
+  const phase = isMoon
+    ? INITIAL_PHASE[id]
+    : THREE.MathUtils.degToRad(BODIES[id].orbit!.meanAnomalyAtEpochDeg);
   return {
     body: { id, orbitPivot, tiltGroup, mesh, radius, pickProxy },
     offset,
-    orbitRadius,
+    orbitShape,
     update(tSec) {
-      orbitPivot.rotation.y = orbitalAngle(period, tSec, phase);
+      const meanAnomaly = orbitalAngle(period, tSec, phase);
+      if (orbitShape) {
+        const [x, y, z] = positionAtMeanAnomaly(orbitShape, meanAnomaly);
+        offset.position.set(x, y, z);
+      } else {
+        orbitPivot.rotation.y = meanAnomaly;
+      }
       // The Moon is tidally locked: its fixed yaw rides along with the rotating pivot.
       if (!isMoon) mesh.rotation.y = rotationAngle(spinHours, tSec);
+      return meanAnomaly;
     },
     setSegments(next) {
       const old = mesh.geometry;

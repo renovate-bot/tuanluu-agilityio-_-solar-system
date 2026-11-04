@@ -4,7 +4,13 @@ import { createSolarSystem } from '../../src/scene/solarSystem';
 import { tierSettings } from '../../src/quality/tiers';
 import { BODY_IDS, type BodyId } from '../../src/data/types';
 import { BODIES } from '../../src/data/bodies';
-import { MOON_ORBIT_DISPLAY } from '../../src/config/scale';
+import {
+  EARTH_YEAR_DAYS,
+  MOON_ORBIT_DISPLAY,
+  displaySemiMajorAxis,
+  orbitalAngle,
+} from '../../src/config/scale';
+import { positionAtMeanAnomaly } from '../../src/bodies/kepler';
 import { ORBIT_STYLE } from '../../src/bodies/orbitMath';
 
 function textures(): Map<string, THREE.Texture> {
@@ -34,12 +40,51 @@ function make(tier: 'low' | 'high' = 'high') {
   return createSolarSystem(textures(), tierSettings(tier));
 }
 
+type OrbitingBodyId = Exclude<BodyId, 'sun' | 'moon'>;
+const ORBITING = BODY_IDS.filter((id): id is OrbitingBodyId => id !== 'sun' && id !== 'moon');
+
+function orbitShape(id: OrbitingBodyId) {
+  const orbit = BODIES[id].orbit;
+  if (!orbit) throw new Error(`Missing orbit for ${id}`);
+  return {
+    semiMajorAxisDisplay: displaySemiMajorAxis(orbit.semiMajorAxisAu),
+    eccentricity: orbit.eccentricity,
+    inclinationRad: THREE.MathUtils.degToRad(orbit.inclinationDeg),
+    ascendingNodeRad: THREE.MathUtils.degToRad(orbit.longitudeOfAscendingNodeDeg),
+    argumentOfPerihelionRad: THREE.MathUtils.degToRad(orbit.argumentOfPerihelionDeg),
+  };
+}
+
+function meanAnomalyAt(id: OrbitingBodyId, tSec: number): number {
+  const orbit = BODIES[id].orbit;
+  if (!orbit) throw new Error(`Missing orbit for ${id}`);
+  return orbitalAngle(
+    id === 'earth' ? EARTH_YEAR_DAYS : (BODIES[id].physical.orbitalPeriodDays ?? EARTH_YEAR_DAYS),
+    tSec,
+    THREE.MathUtils.degToRad(orbit.meanAnomalyAtEpochDeg),
+  );
+}
+
 describe('createSolarSystem', () => {
   it('has all 11 bodies and 11 pickables', () => {
     const ss = make();
     expect(ss.bodies.size).toBe(11);
     for (const id of BODY_IDS) expect(ss.bodies.has(id)).toBe(true);
     expect(ss.pickables.length).toBe(11);
+  });
+
+  it('places each planet at its J2000 Kepler position at t=0', () => {
+    const ss = make();
+    ss.update(0);
+    for (const id of ORBITING) {
+      const expected = positionAtMeanAnomaly(orbitShape(id), meanAnomalyAt(id, 0));
+      const actual = worldPos(ss.bodies.get(id)!.mesh);
+      expect([actual.x, actual.y, actual.z], id).toEqual([
+        expect.closeTo(expected[0], 3),
+        expect.closeTo(expected[1], 3),
+        expect.closeTo(expected[2], 3),
+      ]);
+    }
   });
 
   it('returns Earth to its start position after one year (60 s)', () => {
@@ -127,8 +172,7 @@ describe('createSolarSystem', () => {
   });
 
   describe('orbit ribbons', () => {
-    const ORBITING = BODY_IDS.filter((id) => id !== 'sun' && id !== 'moon');
-    type Orbit = { id: BodyId; mesh: THREE.Mesh; mat: THREE.ShaderMaterial };
+    type Orbit = { id: OrbitingBodyId; mesh: THREE.Mesh; mat: THREE.ShaderMaterial };
 
     function orbits(ss: ReturnType<typeof make>): Orbit[] {
       const meshes: THREE.Mesh[] = [];
@@ -145,17 +189,19 @@ describe('createSolarSystem', () => {
     }
     const num = (m: THREE.ShaderMaterial, k: string): number => m.uniforms[k]!.value as number;
 
-    it('draws exactly 9 ShaderMaterial ribbons (no LineLoop) at each orbit radius', () => {
+    it('draws each ribbon on the corresponding Kepler ellipse', () => {
       const ss = make();
       for (const { id, mesh, mat } of orbits(ss)) {
         expect(mesh).toBeInstanceOf(THREE.Mesh);
         expect(mesh).not.toBeInstanceOf(THREE.LineLoop);
         expect(mat).toBeInstanceOf(THREE.ShaderMaterial);
         const p = mesh.geometry.getAttribute('position');
-        expect(Math.hypot(p.getX(0), p.getZ(0)), id).toBeCloseTo(
-          ss.bodies.get(id)!.orbitPivot.children[0]!.position.x,
-          3,
-        );
+        const expected = positionAtMeanAnomaly(orbitShape(id), 0);
+        expect([p.getX(0), p.getY(0), p.getZ(0)], id).toEqual([
+          expect.closeTo(expected[0], 3),
+          expect.closeTo(expected[1], 3),
+          expect.closeTo(expected[2], 3),
+        ]);
       }
     });
 
@@ -167,12 +213,15 @@ describe('createSolarSystem', () => {
       }
     });
 
-    it('feeds uPlanetAngle from orbitPivot.rotation.y after each update', () => {
+    it('feeds each ribbon the mean anomaly returned by the corresponding rig update', () => {
       const ss = make();
       for (const t of [0, 7.3, 123.4]) {
         ss.update(t);
         for (const { id, mat } of orbits(ss)) {
-          expect(num(mat, 'uPlanetAngle'), id).toBe(ss.bodies.get(id)!.orbitPivot.rotation.y);
+          expect(num(mat, 'uPlanetMeanAnomaly'), id).toBeCloseTo(
+            meanAnomalyAt(id, t),
+            10,
+          );
         }
       }
     });
