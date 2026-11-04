@@ -58,7 +58,7 @@ test('sound button toggles mute state', async ({ page }) => {
     .toBe(false);
 });
 
-test('credits modal shows a safe, localized support link with a mobile-sized target', async ({
+test('credits modal shows a safe support link with an English label across languages', async ({
   page,
 }) => {
   // Reload-based and close to the 60 s limit under load on software GL.
@@ -99,7 +99,7 @@ test('credits modal shows a safe, localized support link with a mobile-sized tar
   }
   await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('vi');
   await page.getByTestId('credits').click();
-  await expect(page.getByRole('link', { name: 'Mời tôi một ly cà phê' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Buy me a coffee' })).toBeVisible();
   await page.getByRole('dialog').getByTestId('credits-close').click();
   await expect(dialog).toBeHidden();
 });
