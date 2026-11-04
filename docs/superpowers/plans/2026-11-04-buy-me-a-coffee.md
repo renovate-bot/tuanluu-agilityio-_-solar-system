@@ -64,7 +64,7 @@ Per user instruction, do not rerun this e2e command locally for the label correc
 Run: `npm run typecheck`, `npm run lint`, and `npm test`.
 Expected: all checks pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/superpowers/plans/2026-11-04-buy-me-a-coffee.md docs/superpowers/specs/2026-11-04-buy-me-a-coffee-design.md
