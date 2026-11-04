@@ -213,6 +213,27 @@ body {
 .credits-list a {
   color: #8fbcff;
 }
+.credits-support {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  padding: 0 16px;
+  border: 1px solid rgba(160, 200, 255, 0.6);
+  border-radius: 10px;
+  background: rgba(60, 110, 220, 0.9);
+  color: #e8ecf5;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+.credits-support:hover,
+.credits-support:focus-visible {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(80, 130, 240, 0.95);
+}
 
 /* Info panel (Task 24) */
 .info-panel {

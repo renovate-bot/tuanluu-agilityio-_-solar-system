@@ -23,6 +23,12 @@ export function createCredits(root: HTMLElement, store: Store<AppState>): Credit
   title.className = 'credits-title';
   const list = document.createElement('ul');
   list.className = 'credits-list';
+  const support = document.createElement('a');
+  support.className = 'credits-support';
+  support.href = 'https://me.momo.vn/bbk9x';
+  support.target = '_blank';
+  support.rel = 'noopener noreferrer';
+  support.setAttribute('data-testid', 'credits-support');
   const textures = document.createElement('li');
   const textureLink = document.createElement('a');
   textureLink.href = TEXTURES_URL;
@@ -36,7 +42,7 @@ export function createCredits(root: HTMLElement, store: Store<AppState>): Credit
   close.type = 'button';
   close.className = 'ctl-btn glass credits-close';
   close.setAttribute('data-testid', 'credits-close');
-  dialog.append(title, list, close);
+  dialog.append(title, list, support, close);
   overlay.append(dialog);
   root.append(overlay);
 
@@ -47,6 +53,7 @@ export function createCredits(root: HTMLElement, store: Store<AppState>): Credit
     textureLink.textContent = t(lang, 'credits.textures');
     data.textContent = t(lang, 'credits.data');
     voice.textContent = t(lang, 'credits.voice');
+    support.textContent = t(lang, 'credits.support');
     close.textContent = t(lang, 'credits.close');
   };
   render();
