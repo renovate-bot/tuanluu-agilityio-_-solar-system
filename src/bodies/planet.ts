@@ -4,6 +4,7 @@ import type { BodyId } from '../data/types';
 import type { TierSettings } from '../quality/tiers';
 import {
   EARTH_YEAR_DAYS,
+  displayPlanetRadius,
   INITIAL_PHASE,
   MOON_ORBIT_DISPLAY,
   displaySemiMajorAxis,
@@ -90,8 +91,8 @@ export function createPlanet(
   material?: THREE.Material,
 ): PlanetRig {
   const phys = BODIES[id].physical;
-  const radius = displayRadius(phys.diameterKm);
   const isMoon = id === 'moon';
+  const radius = isMoon ? displayRadius(phys.diameterKm) : displayPlanetRadius(phys.diameterKm);
   const orbitShape = orbitShapeOf(id);
   if (!isMoon && !orbitShape) throw new Error(`Missing orbit elements for ${id}`);
 

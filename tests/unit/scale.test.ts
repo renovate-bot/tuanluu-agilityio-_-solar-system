@@ -3,12 +3,14 @@ import {
   ASTEROID_BELT_MKM,
   EARTH_DAY_SECONDS,
   INITIAL_PHASE,
+  displayPlanetRadius,
   displaySemiMajorAxis,
   displayOrbitRadius,
   displayRadius,
   orbitalAngle,
   rotationAngle,
 } from '../../src/config/scale';
+import { BODIES } from '../../src/data/bodies';
 import { BODY_IDS } from '../../src/data/types';
 
 const DIAMETER = {
@@ -61,6 +63,35 @@ describe('displayRadius', () => {
 
   it('keeps the Sun from swallowing Mercury', () => {
     expect(displayRadius(1392700)).toBeLessThan(displayOrbitRadius(57.9) - 5);
+  });
+});
+
+describe('displayPlanetRadius', () => {
+  it('uses a shared linear coefficient relative to Earth', () => {
+    const earth = displayPlanetRadius(BODIES.earth.physical.diameterKm);
+    expect(displayPlanetRadius(BODIES.jupiter.physical.diameterKm) / earth).toBeCloseTo(
+      BODIES.jupiter.physical.diameterKm / BODIES.earth.physical.diameterKm,
+      10,
+    );
+    expect(displayPlanetRadius(BODIES.pluto.physical.diameterKm) / earth).toBeCloseTo(
+      BODIES.pluto.physical.diameterKm / BODIES.earth.physical.diameterKm,
+      10,
+    );
+  });
+
+  it('keeps Jupiter and Saturn with its rings clear across their eccentric orbit gap', () => {
+    const jupiter = BODIES.jupiter.orbit!;
+    const saturn = BODIES.saturn.orbit!;
+    const jupiterApoapsis =
+      displaySemiMajorAxis(jupiter.semiMajorAxisAu) * (1 + jupiter.eccentricity);
+    const saturnPeriapsis =
+      displaySemiMajorAxis(saturn.semiMajorAxisAu) * (1 - saturn.eccentricity);
+    const jupiterOuterEdge =
+      jupiterApoapsis + displayPlanetRadius(BODIES.jupiter.physical.diameterKm);
+    const saturnRingInnerEdge =
+      saturnPeriapsis - 2.3 * displayPlanetRadius(BODIES.saturn.physical.diameterKm);
+
+    expect(jupiterOuterEdge).toBeLessThan(saturnRingInnerEdge);
   });
 });
 

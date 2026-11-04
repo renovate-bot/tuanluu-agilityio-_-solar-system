@@ -1,12 +1,19 @@
 import {
   OVERVIEW_MAX_BOOST,
   OVERVIEW_MIN_BODY_PX,
-  displayOrbitRadius,
-  displayRadius,
+  displaySemiMajorAxis,
+  displayPlanetRadius,
 } from '../config/scale';
+import { BODIES } from '../data/bodies';
 import type { Layout } from '../ui/layout';
 
-export const OVERVIEW_FIT_RADIUS: number = displayOrbitRadius(5906.4) + 10;
+const MAX_DISPLAYED_APOAPSIS = Object.values(BODIES).reduce((largest, body) => {
+  const orbit = body.orbit;
+  if (!orbit) return largest;
+  return Math.max(largest, displaySemiMajorAxis(orbit.semiMajorAxisAu) * (1 + orbit.eccentricity));
+}, 0);
+
+export const OVERVIEW_FIT_RADIUS = MAX_DISPLAYED_APOAPSIS + 10;
 /** The part of the view (NDC half-extents) the overview disc may use; the rest is UI chrome. */
 export const OVERVIEW_SAFE_NDC = { x: 1, y: 0.78 } as const;
 /**
@@ -20,7 +27,7 @@ export function overviewPolar(aspect: number): number {
 /** Default share of the limiting half view angle a focused body fills. */
 export const FOCUS_FILL = 0.35;
 const MOBILE_TOUR_FILL = 0.3;
-const EARTH_DISPLAY_RADIUS = displayRadius(12756);
+const EARTH_DISPLAY_RADIUS = displayPlanetRadius(BODIES.earth.physical.diameterKm);
 
 /** Distance at which a sphere of `radius` fills `fill` of the limiting view dimension. */
 export function focusDistance(

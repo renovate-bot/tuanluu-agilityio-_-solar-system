@@ -8,8 +8,16 @@ import {
   EARTH_YEAR_DAYS,
   MOON_ORBIT_DISPLAY,
   displaySemiMajorAxis,
+  displayRadius,
   orbitalAngle,
+  OVERVIEW_MAX_BOOST,
 } from '../../src/config/scale';
+import {
+  OVERVIEW_FIT_RADIUS,
+  overviewFrame,
+  overviewMinPx,
+  overviewPolar,
+} from '../../src/camera/framing';
 import { positionAtMeanAnomaly } from '../../src/bodies/kepler';
 import * as kepler from '../../src/bodies/kepler';
 import { ORBIT_STYLE } from '../../src/bodies/orbitMath';
@@ -72,6 +80,23 @@ describe('createSolarSystem', () => {
     expect(ss.bodies.size).toBe(11);
     for (const id of BODY_IDS) expect(ss.bodies.has(id)).toBe(true);
     expect(ss.pickables.length).toBe(11);
+  });
+
+  it('uses linear planet radii and preserves the Sun and Moon display sizes', () => {
+    const ss = make();
+    const earthRadius = ss.bodies.get('earth')!.radius;
+    for (const id of ORBITING) {
+      expect(ss.bodies.get(id)!.radius / earthRadius).toBeCloseTo(
+        BODIES[id].physical.diameterKm / BODIES.earth.physical.diameterKm,
+        10,
+      );
+    }
+    for (const id of ['sun', 'moon'] as const) {
+      expect(ss.bodies.get(id)!.radius).toBeCloseTo(
+        displayRadius(BODIES[id].physical.diameterKm),
+        10,
+      );
+    }
   });
 
   it('places each planet at its J2000 Kepler position at t=0', () => {
@@ -219,10 +244,7 @@ describe('createSolarSystem', () => {
       for (const t of [0, 7.3, 123.4]) {
         ss.update(t);
         for (const { id, mat } of orbits(ss)) {
-          expect(num(mat, 'uPlanetMeanAnomaly'), id).toBeCloseTo(
-            meanAnomalyAt(id, t),
-            10,
-          );
+          expect(num(mat, 'uPlanetMeanAnomaly'), id).toBeCloseTo(meanAnomalyAt(id, t), 10);
         }
       }
     });
@@ -320,8 +342,14 @@ describe('createSolarSystem', () => {
 });
 
 describe('overview boost', () => {
-  function cameraAt(x: number, y: number, z: number, look: THREE.Vector3 = new THREE.Vector3()) {
-    const camera = new THREE.PerspectiveCamera(50, 390 / 664, 0.1, 20000);
+  function cameraAt(
+    x: number,
+    y: number,
+    z: number,
+    look: THREE.Vector3 = new THREE.Vector3(),
+    aspect = 390 / 664,
+  ) {
+    const camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 20000);
     camera.position.set(x, y, z);
     camera.lookAt(look);
     camera.updateMatrixWorld(true);
@@ -329,6 +357,55 @@ describe('overview boost', () => {
   }
   const scaleOf = (ss: ReturnType<typeof make>, id: BodyId): number =>
     ss.bodies.get(id)!.tiltGroup.scale.x;
+
+  it('keeps every planet above its radius-scaled pixel floor in portrait and landscape overview', () => {
+    const ss = make();
+    ss.update(0);
+    let requiredCap = 1;
+    const floorFailures: string[] = [];
+    const viewports = [
+      { width: 1280, height: 720 },
+      { width: 390, height: 844 },
+    ];
+
+    for (const viewport of viewports) {
+      const aspect = viewport.width / viewport.height;
+      const polar = overviewPolar(aspect);
+      const frame = overviewFrame(OVERVIEW_FIT_RADIUS, 50, aspect, polar);
+      const camera = cameraAt(
+        0,
+        frame.distance * Math.cos(polar),
+        frame.distance * Math.sin(polar),
+        new THREE.Vector3(),
+        aspect,
+      );
+      ss.root.updateMatrixWorld(true);
+      ss.applyOverviewBoost(camera, viewport.height);
+
+      for (const id of ORBITING) {
+        const body = ss.bodies.get(id)!;
+        const basePx =
+          (body.radius /
+            (worldPos(body.mesh).distanceTo(camera.position) * Math.tan((50 * Math.PI) / 360))) *
+          (viewport.height / 2);
+        requiredCap = Math.max(requiredCap, overviewMinPx(body.radius) / basePx);
+        const shownPx = basePx * scaleOf(ss, id);
+
+        expect(scaleOf(ss, id), `${id} overview boost`).toBeLessThanOrEqual(OVERVIEW_MAX_BOOST);
+        if (shownPx < overviewMinPx(body.radius) - 0.01) {
+          floorFailures.push(
+            `${id} ${viewport.width}x${viewport.height}: ${shownPx.toFixed(3)}px < ${overviewMinPx(body.radius).toFixed(3)}px`,
+          );
+        }
+      }
+    }
+
+    expect(floorFailures, `required boost cap ${requiredCap}`).toEqual([]);
+    expect(OVERVIEW_MAX_BOOST, `smallest required boost cap ${requiredCap}`).toBeGreaterThanOrEqual(
+      requiredCap,
+    );
+    expect(OVERVIEW_MAX_BOOST).toBeLessThan(requiredCap + 0.05);
+  });
 
   it('enlarges far bodies in a phone overview, larger bodies stay larger on screen', () => {
     const ss = make();
@@ -351,6 +428,18 @@ describe('overview boost', () => {
     ss.applyOverviewBoost(cameraAt(earth.x + 8, earth.y + 2, earth.z, earth), 664);
     expect(scaleOf(ss, 'earth')).toBe(1);
     expect(ss.bodies.get('moon')!.tiltGroup.visible).toBe(true);
+  });
+
+  it('returns each focused planet to its unboosted base radius', () => {
+    const ss = make();
+    ss.update(0);
+    ss.root.updateMatrixWorld(true);
+    for (const id of ORBITING) {
+      const body = ss.bodies.get(id)!;
+      const pos = worldPos(body.mesh);
+      ss.applyOverviewBoost(cameraAt(pos.x + 8, pos.y + 2, pos.z, pos), 664);
+      expect(scaleOf(ss, id), id).toBe(1);
+    }
   });
 
   it('hides the Moon while a boosted Earth would swallow its orbit, and makes it unpickable', () => {
