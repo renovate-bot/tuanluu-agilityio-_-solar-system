@@ -160,4 +160,9 @@ describe('UI strings', () => {
       'Narration voice generated with Microsoft Edge TTS',
     );
   });
+
+  it('support call to action keeps its English label in both locales', () => {
+    expect(UI_STRINGS.en['credits.support']).toBe('Buy me a coffee');
+    expect(UI_STRINGS.vi['credits.support']).toBe('Buy me a coffee');
+  });
 });

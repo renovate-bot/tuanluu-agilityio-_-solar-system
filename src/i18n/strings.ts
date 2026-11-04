@@ -93,7 +93,7 @@ const VI: Record<UiKey, string> = {
   'credits.textures': 'Texture: Solar System Scope (CC BY 4.0)',
   'credits.data': 'Dữ liệu: NASA Planetary Fact Sheet và NASA Science',
   'credits.voice': 'Giọng thuyết minh được tạo bằng Microsoft Edge TTS',
-  'credits.support': 'Mời tôi một ly cà phê',
+  'credits.support': 'Buy me a coffee',
   'credits.close': 'Đóng',
 
   loading: 'Đang tải Hệ Mặt Trời…',
