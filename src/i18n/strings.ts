@@ -27,6 +27,7 @@ const EN = {
   'credits.textures': 'Textures: Solar System Scope (CC BY 4.0)',
   'credits.data': 'Data: NASA Planetary Fact Sheet and NASA Science',
   'credits.voice': 'Narration voice generated with Microsoft Edge TTS',
+  'credits.support': 'Buy me a coffee',
   'credits.close': 'Close',
 
   loading: 'Loading the Solar System…',
@@ -92,6 +93,7 @@ const VI: Record<UiKey, string> = {
   'credits.textures': 'Texture: Solar System Scope (CC BY 4.0)',
   'credits.data': 'Dữ liệu: NASA Planetary Fact Sheet và NASA Science',
   'credits.voice': 'Giọng thuyết minh được tạo bằng Microsoft Edge TTS',
+  'credits.support': 'Mời tôi một ly cà phê',
   'credits.close': 'Đóng',
 
   loading: 'Đang tải Hệ Mặt Trời…',

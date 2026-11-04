@@ -58,10 +58,17 @@ test('sound button toggles mute state', async ({ page }) => {
     .toBe(false);
 });
 
-test('credits modal shows the required credits and closes', async ({ page }) => {
+test('credits modal shows a safe, localized support link with a mobile-sized target', async ({
+  page,
+}) => {
   // Reload-based and close to the 60 s limit under load on software GL.
   test.slow();
+  await page.setViewportSize({ width: 1440, height: 900 });
   await open(page);
+  if ((await page.evaluate(() => document.documentElement.lang)) !== 'en') {
+    await page.getByTestId('lang').click();
+  }
+  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('en');
   await page.getByTestId('credits').click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible({ timeout: 25_000 });
@@ -71,7 +78,29 @@ test('credits modal shows the required credits and closes', async ({ page }) => 
   await expect(
     dialog.locator('a[href="https://www.solarsystemscope.com/textures/"]'),
   ).toBeVisible();
+  const supportLink = page.getByRole('link', { name: 'Buy me a coffee' });
+  await expect(supportLink).toHaveAttribute('href', 'https://me.momo.vn/bbk9x');
+  await expect(supportLink).toHaveAttribute('target', '_blank');
+  await expect(supportLink).toHaveAttribute('rel', 'noopener noreferrer');
+  const desktopBox = await supportLink.boundingBox();
+  expect(desktopBox?.width ?? 0).toBeGreaterThanOrEqual(44);
+  expect(desktopBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileBox = await supportLink.boundingBox();
+  expect(mobileBox?.width ?? 0).toBeGreaterThanOrEqual(44);
+  expect(mobileBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+
   await dialog.getByTestId('credits-close').click();
+  await expect(dialog).toBeHidden();
+
+  if ((await page.evaluate(() => document.documentElement.lang)) !== 'vi') {
+    await page.getByTestId('lang').click();
+  }
+  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('vi');
+  await page.getByTestId('credits').click();
+  await expect(page.getByRole('link', { name: 'Mời tôi một ly cà phê' })).toBeVisible();
+  await page.getByRole('dialog').getByTestId('credits-close').click();
   await expect(dialog).toBeHidden();
 });
 
