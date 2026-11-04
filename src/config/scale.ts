@@ -15,6 +15,7 @@ export const ASTEROID_BELT_PERIOD_YEARS = 4.6;
 export const EARTH_YEAR_DAYS = 365.25;
 const EARTH_DAY_HOURS = 23.93;
 const TWO_PI = 2 * Math.PI;
+const AU_MKM = 149.5978707;
 
 /** Compressed (non-linear) body radius in display units. */
 export function displayRadius(diameterKm: number): number {
@@ -24,6 +25,11 @@ export function displayRadius(diameterKm: number): number {
 /** Compressed orbit radius in display units; Mercury lands near 48. */
 export function displayOrbitRadius(distanceMkm: number): number {
   return 20 + 28 * Math.sqrt(distanceMkm / 57.9);
+}
+
+/** Compressed display distance for a semi-major axis given in astronomical units. */
+export function displaySemiMajorAxis(semiMajorAxisAu: number): number {
+  return displayOrbitRadius(semiMajorAxisAu * AU_MKM);
 }
 
 /** Orbital angle in radians at time tSeconds. */

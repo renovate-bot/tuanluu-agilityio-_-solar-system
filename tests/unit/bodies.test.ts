@@ -57,6 +57,32 @@ describe('BODIES', () => {
     }
   });
 
+  it('has finite J2000 orbital elements for every planet and Pluto only', () => {
+    for (const id of PLANET_ORDER) {
+      const orbit = BODIES[id].orbit;
+      expect(orbit, id).toBeDefined();
+      if (!orbit) continue;
+
+      expect(orbit.semiMajorAxisAu, id).toBeGreaterThan(0);
+      expect(orbit.eccentricity, id).toBeGreaterThanOrEqual(0);
+      expect(orbit.eccentricity, id).toBeLessThan(1);
+      expect(
+        [
+          orbit.semiMajorAxisAu,
+          orbit.eccentricity,
+          orbit.inclinationDeg,
+          orbit.longitudeOfAscendingNodeDeg,
+          orbit.argumentOfPerihelionDeg,
+          orbit.meanAnomalyAtEpochDeg,
+        ].every(Number.isFinite),
+        id,
+      ).toBe(true);
+    }
+
+    expect(BODIES.sun.orbit).toBeUndefined();
+    expect(BODIES.moon.orbit).toBeUndefined();
+  });
+
   it('has planet order and orderFromSun', () => {
     expect(PLANET_ORDER).toEqual([
       'mercury',

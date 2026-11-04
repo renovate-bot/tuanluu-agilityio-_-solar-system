@@ -3,6 +3,7 @@ import {
   ASTEROID_BELT_MKM,
   EARTH_DAY_SECONDS,
   INITIAL_PHASE,
+  displaySemiMajorAxis,
   displayOrbitRadius,
   displayRadius,
   orbitalAngle,
@@ -93,6 +94,12 @@ describe('displayOrbitRadius', () => {
     expect(inner).toBeGreaterThan(mars);
     expect(outer).toBeGreaterThan(inner);
     expect(outer).toBeLessThan(jupiter);
+  });
+});
+
+describe('displaySemiMajorAxis', () => {
+  it('converts an AU to million kilometres before applying orbit compression', () => {
+    expect(displaySemiMajorAxis(1)).toBeCloseTo(65.00714405559911, 10);
   });
 });
 
