@@ -11,7 +11,7 @@ import {
   orbitalAngle,
   rotationAngle,
 } from '../config/scale';
-import { positionAtMeanAnomaly, type KeplerOrbitShape } from './kepler';
+import { writePositionAtMeanAnomaly, type KeplerOrbitShape } from './kepler';
 
 export interface BodyObject {
   id: BodyId;
@@ -135,8 +135,7 @@ export function createPlanet(
     update(tSec) {
       const meanAnomaly = orbitalAngle(period, tSec, phase);
       if (orbitShape) {
-        const [x, y, z] = positionAtMeanAnomaly(orbitShape, meanAnomaly);
-        offset.position.set(x, y, z);
+        writePositionAtMeanAnomaly(orbitShape, meanAnomaly, offset.position);
       } else {
         orbitPivot.rotation.y = meanAnomaly;
       }

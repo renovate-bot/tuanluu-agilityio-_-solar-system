@@ -11,6 +11,7 @@ import {
   orbitalAngle,
 } from '../../src/config/scale';
 import { positionAtMeanAnomaly } from '../../src/bodies/kepler';
+import * as kepler from '../../src/bodies/kepler';
 import { ORBIT_STYLE } from '../../src/bodies/orbitMath';
 
 function textures(): Map<string, THREE.Texture> {
@@ -264,22 +265,28 @@ describe('createSolarSystem', () => {
       expect(e).toBeLessThan(1);
     });
 
-    it('allocates no Vector3 or Color per update', () => {
+    it('does not allocate objects or call the tuple helper per update', () => {
       const ss = make();
       ss.update(1);
       const v3 = vi.spyOn(THREE.Vector3.prototype, 'set');
       const clone = vi.spyOn(THREE.Vector3.prototype, 'clone');
       const colorClone = vi.spyOn(THREE.Color.prototype, 'clone');
       const arr = vi.spyOn(Array, 'from');
-      ss.setOrbitFocus(true);
-      for (let i = 0; i < 10; i++) ss.update(2 + i * 0.1);
-      expect(clone).not.toHaveBeenCalled();
-      expect(colorClone).not.toHaveBeenCalled();
-      expect(arr).not.toHaveBeenCalled();
-      v3.mockRestore();
-      clone.mockRestore();
-      colorClone.mockRestore();
-      arr.mockRestore();
+      const tuplePosition = vi.spyOn(kepler, 'positionAtMeanAnomaly');
+      try {
+        ss.setOrbitFocus(true);
+        for (let i = 0; i < 10; i++) ss.update(2 + i * 0.1);
+        expect(clone).not.toHaveBeenCalled();
+        expect(colorClone).not.toHaveBeenCalled();
+        expect(arr).not.toHaveBeenCalled();
+        expect(tuplePosition).not.toHaveBeenCalled();
+      } finally {
+        v3.mockRestore();
+        clone.mockRestore();
+        colorClone.mockRestore();
+        arr.mockRestore();
+        tuplePosition.mockRestore();
+      }
     });
   });
 

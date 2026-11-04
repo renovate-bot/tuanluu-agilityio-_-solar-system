@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   positionAtMeanAnomaly,
   solveEccentricAnomaly,
+  writePositionAtMeanAnomaly,
   type KeplerOrbitShape,
 } from '../../src/bodies/kepler';
 
@@ -62,6 +63,17 @@ describe('positionAtMeanAnomaly', () => {
     expect(() =>
       positionAtMeanAnomaly({ ...CIRCULAR_ORBIT, inclinationRad: Number.NaN }, 0),
     ).toThrow(RangeError);
+  });
+});
+
+describe('writePositionAtMeanAnomaly', () => {
+  it('writes the position into the supplied reusable output', () => {
+    const output = { x: 0, y: 0, z: 0 };
+    const result = writePositionAtMeanAnomaly(CIRCULAR_ORBIT, Math.PI / 2, output);
+    expect(result).toBeUndefined();
+    expect(output.x).toBeCloseTo(0, 12);
+    expect(output.y).toBeCloseTo(0, 12);
+    expect(output.z).toBeCloseTo(-10, 12);
   });
 });
 

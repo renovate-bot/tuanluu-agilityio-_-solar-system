@@ -6,6 +6,12 @@ export interface KeplerOrbitShape {
   argumentOfPerihelionRad: number;
 }
 
+export interface KeplerPositionBuffer {
+  x: number;
+  y: number;
+  z: number;
+}
+
 const TWO_PI = 2 * Math.PI;
 const BISECTION_ITERATIONS = 48;
 
@@ -47,6 +53,16 @@ export function positionAtMeanAnomaly(
   shape: KeplerOrbitShape,
   meanAnomalyRad: number,
 ): readonly [x: number, y: number, z: number] {
+  const position = { x: 0, y: 0, z: 0 };
+  writePositionAtMeanAnomaly(shape, meanAnomalyRad, position);
+  return [position.x, position.y, position.z];
+}
+
+export function writePositionAtMeanAnomaly(
+  shape: KeplerOrbitShape,
+  meanAnomalyRad: number,
+  output: KeplerPositionBuffer,
+): void {
   assertFinite(shape.semiMajorAxisDisplay, 'semiMajorAxisDisplay');
   assertFinite(shape.inclinationRad, 'inclinationRad');
   assertFinite(shape.ascendingNodeRad, 'ascendingNodeRad');
@@ -78,5 +94,7 @@ export function positionAtMeanAnomaly(
   const yEcliptic = nodeSin * xPerihelion + nodeCos * yInclined;
 
   // Map J2000 ecliptic (x, y, z) into the app's XZ ecliptic plane with Y up.
-  return [xEcliptic, zInclined, -yEcliptic];
+  output.x = xEcliptic;
+  output.y = zInclined;
+  output.z = -yEcliptic;
 }
