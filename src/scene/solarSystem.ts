@@ -4,12 +4,9 @@ import { BODY_IDS, type BodyId, type ContentId } from '../data/types';
 import type { TierSettings } from '../quality/tiers';
 import {
   ASTEROID_BELT_MKM,
-  EARTH_YEAR_DAYS,
-  INITIAL_PHASE,
   MOON_ORBIT_DISPLAY,
   displayOrbitRadius,
   displayRadius,
-  orbitalAngle,
 } from '../config/scale';
 import { overviewBoost } from '../camera/framing';
 import {
@@ -243,7 +240,8 @@ export function createSolarSystem(tex: Map<string, THREE.Texture>, s: TierSettin
   root.name = 'solar-system';
   const bodies = new Map<BodyId, BodyObject>();
   const rigs = new Map<BodyId, PlanetRig>();
-  const orbitLines: { pivot: THREE.Object3D; line: OrbitLine }[] = [];
+  const orbitLines: OrbitLine[] = [];
+  const orbitLineByBody = new Map<BodyId, OrbitLine>();
 
   bodies.set('sun', createSunStandIn(root));
 
@@ -262,22 +260,20 @@ export function createSolarSystem(tex: Map<string, THREE.Texture>, s: TierSettin
     bodies.set(id, rig.body);
     // One orbit ribbon per planet and Pluto; the Moon's tiny orbit stays unmarked.
     const orbitColor = BODIES[id].orbitColor;
-    if (orbitColor) {
-      const line = createOrbitLine(rig.orbitRadius, orbitColor);
-      orbitLines.push({ pivot: rig.body.orbitPivot, line });
+    if (orbitColor && rig.orbitShape) {
+      const line = createOrbitLine(rig.orbitShape, orbitColor);
+      orbitLines.push(line);
+      orbitLineByBody.set(id, line);
       root.add(line.object);
     }
   }
 
   // Focus anchor for the asteroid belt: mid-belt, kept on Earth's side of the Sun.
   const beltMid = (ASTEROID_BELT_MKM.inner + ASTEROID_BELT_MKM.outer) / 2;
-  const beltPivot = new THREE.Group();
-  beltPivot.name = 'belt-pivot';
   const beltAnchor = new THREE.Object3D();
   beltAnchor.name = 'asteroid-belt-focus';
   beltAnchor.position.x = displayOrbitRadius(beltMid);
-  beltPivot.add(beltAnchor);
-  root.add(beltPivot);
+  root.add(beltAnchor);
 
   const belt = createAsteroidBelt(s.asteroidCount);
   root.add(belt.mesh);
@@ -296,17 +292,24 @@ export function createSolarSystem(tex: Map<string, THREE.Texture>, s: TierSettin
     bodies,
     pickables,
     update(tSec) {
-      for (const rig of rigs.values()) rig.update(tSec);
+      for (const rig of rigs.values()) {
+        const meanAnomaly = rig.update(tSec);
+        orbitLineByBody.get(rig.body.id)?.setPlanetMeanAnomaly(meanAnomaly);
+      }
       const dt = lastT === null ? 0 : Math.min(0.25, Math.max(0, tSec - lastT));
       lastT = tSec;
       emphasis = stepEmphasis(emphasis, emphasisTarget, dt);
-      for (const o of orbitLines) {
-        o.line.setPlanetAngle(o.pivot.rotation.y);
-        o.line.setEmphasis(emphasis);
-      }
+      for (const line of orbitLines) line.setEmphasis(emphasis);
       deco.update();
       belt.update(tSec);
-      beltPivot.rotation.y = orbitalAngle(EARTH_YEAR_DAYS, tSec, INITIAL_PHASE.earth);
+      const earthPosition = rigs.get('earth')!.offset.position;
+      const earthDistance = Math.hypot(earthPosition.x, earthPosition.y, earthPosition.z);
+      const beltRadius = displayOrbitRadius(beltMid);
+      beltAnchor.position.set(
+        (earthPosition.x / earthDistance) * beltRadius,
+        (earthPosition.y / earthDistance) * beltRadius,
+        (earthPosition.z / earthDistance) * beltRadius,
+      );
     },
     getFocusTarget(id) {
       if (id === 'asteroid-belt') return { object: beltAnchor, radius: BELT_FOCUS_RADIUS };
@@ -398,7 +401,7 @@ export function createSolarSystem(tex: Map<string, THREE.Texture>, s: TierSettin
       }
     },
     setViewport(w, h, pixelRatio) {
-      for (const o of orbitLines) o.line.setViewport(w, h, pixelRatio);
+      for (const line of orbitLines) line.setViewport(w, h, pixelRatio);
     },
     setOrbitFocus(focused) {
       emphasisTarget = focused ? ORBIT_STYLE.focusEmphasis : 1;

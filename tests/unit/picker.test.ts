@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TAP_MAX_MOVE_PX, TAP_MAX_MS, createPicker, isTap } from '../../src/interaction/picker';
 import { createLabels } from '../../src/ui/labels';
 import { createSolarSystem } from '../../src/scene/solarSystem';
+import { OVERVIEW_FIT_RADIUS, overviewFrame, overviewPolar } from '../../src/camera/framing';
 import { tierSettings } from '../../src/quality/tiers';
 import type { BodyId } from '../../src/data/types';
 
@@ -180,7 +181,9 @@ describe('createLabels', () => {
     const solar = createSolarSystem(tex, tierSettings('low'));
     solar.root.updateMatrixWorld(true);
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 20000);
-    camera.position.set(0, 45, 130);
+    const polar = overviewPolar(camera.aspect);
+    const frame = overviewFrame(OVERVIEW_FIT_RADIUS, camera.fov, camera.aspect, polar);
+    camera.position.setFromSphericalCoords(frame.distance, polar, 0);
     camera.lookAt(0, 0, 0);
     camera.updateMatrixWorld(true);
     const container = document.createElement('div');

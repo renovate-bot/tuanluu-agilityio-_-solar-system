@@ -12,10 +12,15 @@ import {
   overviewPolar,
 } from '../../src/camera/framing';
 import {
+  displaySemiMajorAxis,
   displayOrbitRadius,
+  displayPlanetRadius,
   OVERVIEW_MAX_BOOST,
   OVERVIEW_MIN_BODY_PX,
 } from '../../src/config/scale';
+import { BODIES } from '../../src/data/bodies';
+
+const earthPlanetRadius = displayPlanetRadius(BODIES.earth.physical.diameterKm);
 
 describe('focusDistance', () => {
   it('grows linearly with radius', () => {
@@ -38,8 +43,19 @@ describe('focusScreenOffset', () => {
 });
 
 describe('OVERVIEW_FIT_RADIUS', () => {
-  it('is Pluto orbit plus 10', () =>
-    expect(OVERVIEW_FIT_RADIUS).toBeCloseTo(displayOrbitRadius(5906.4) + 10, 9));
+  it('contains the largest displayed apoapsis plus the existing safety margin', () => {
+    const largestApoapsis = Object.values(BODIES).reduce((largest, body) => {
+      const orbit = body.orbit;
+      if (!orbit) return largest;
+      return Math.max(
+        largest,
+        displaySemiMajorAxis(orbit.semiMajorAxisAu) * (1 + orbit.eccentricity),
+      );
+    }, 0);
+
+    expect(OVERVIEW_FIT_RADIUS).toBeCloseTo(largestApoapsis + 10, 9);
+    expect(OVERVIEW_FIT_RADIUS).toBeGreaterThan(displayOrbitRadius(5906.4) + 10);
+  });
 });
 
 /** Projects the overview orbit circle of `radius`: max |NDC x| and the NDC y range. */
@@ -159,8 +175,9 @@ describe('overviewBoost', () => {
       }
   });
   it('the minimum radius grows with the body radius and is Earth-sized at OVERVIEW_MIN_BODY_PX', () => {
-    expect(overviewMinPx(1.2)).toBeCloseTo(OVERVIEW_MIN_BODY_PX, 6);
-    expect(overviewMinPx(3.5)).toBeGreaterThan(overviewMinPx(1.2));
+    expect(OVERVIEW_MIN_BODY_PX).toBe(6);
+    expect(overviewMinPx(earthPlanetRadius)).toBeCloseTo(6, 6);
+    expect(overviewMinPx(earthPlanetRadius * 3)).toBeGreaterThan(overviewMinPx(earthPlanetRadius));
   });
 });
 

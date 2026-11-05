@@ -3,11 +3,14 @@ import {
   ASTEROID_BELT_MKM,
   EARTH_DAY_SECONDS,
   INITIAL_PHASE,
+  displayPlanetRadius,
+  displaySemiMajorAxis,
   displayOrbitRadius,
   displayRadius,
   orbitalAngle,
   rotationAngle,
 } from '../../src/config/scale';
+import { BODIES } from '../../src/data/bodies';
 import { BODY_IDS } from '../../src/data/types';
 
 const DIAMETER = {
@@ -63,6 +66,35 @@ describe('displayRadius', () => {
   });
 });
 
+describe('displayPlanetRadius', () => {
+  it('uses a shared linear coefficient relative to Earth', () => {
+    const earth = displayPlanetRadius(BODIES.earth.physical.diameterKm);
+    expect(displayPlanetRadius(BODIES.jupiter.physical.diameterKm) / earth).toBeCloseTo(
+      BODIES.jupiter.physical.diameterKm / BODIES.earth.physical.diameterKm,
+      10,
+    );
+    expect(displayPlanetRadius(BODIES.pluto.physical.diameterKm) / earth).toBeCloseTo(
+      BODIES.pluto.physical.diameterKm / BODIES.earth.physical.diameterKm,
+      10,
+    );
+  });
+
+  it('keeps Jupiter and Saturn with its rings clear across their eccentric orbit gap', () => {
+    const jupiter = BODIES.jupiter.orbit!;
+    const saturn = BODIES.saturn.orbit!;
+    const jupiterApoapsis =
+      displaySemiMajorAxis(jupiter.semiMajorAxisAu) * (1 + jupiter.eccentricity);
+    const saturnPeriapsis =
+      displaySemiMajorAxis(saturn.semiMajorAxisAu) * (1 - saturn.eccentricity);
+    const jupiterOuterEdge =
+      jupiterApoapsis + displayPlanetRadius(BODIES.jupiter.physical.diameterKm);
+    const saturnRingInnerEdge =
+      saturnPeriapsis - 2.3 * displayPlanetRadius(BODIES.saturn.physical.diameterKm);
+
+    expect(jupiterOuterEdge).toBeLessThan(saturnRingInnerEdge);
+  });
+});
+
 describe('displayOrbitRadius', () => {
   it('maps Mercury to about 48', () => {
     expect(displayOrbitRadius(57.9)).toBeCloseTo(48, 5);
@@ -93,6 +125,12 @@ describe('displayOrbitRadius', () => {
     expect(inner).toBeGreaterThan(mars);
     expect(outer).toBeGreaterThan(inner);
     expect(outer).toBeLessThan(jupiter);
+  });
+});
+
+describe('displaySemiMajorAxis', () => {
+  it('converts an AU to million kilometres before applying orbit compression', () => {
+    expect(displaySemiMajorAxis(1)).toBeCloseTo(65.00714405559911, 10);
   });
 });
 

@@ -4,7 +4,22 @@ import { createSolarSystem } from '../../src/scene/solarSystem';
 import { tierSettings } from '../../src/quality/tiers';
 import { BODY_IDS, type BodyId } from '../../src/data/types';
 import { BODIES } from '../../src/data/bodies';
-import { MOON_ORBIT_DISPLAY } from '../../src/config/scale';
+import {
+  EARTH_YEAR_DAYS,
+  MOON_ORBIT_DISPLAY,
+  displaySemiMajorAxis,
+  displayRadius,
+  orbitalAngle,
+  OVERVIEW_MAX_BOOST,
+} from '../../src/config/scale';
+import {
+  OVERVIEW_FIT_RADIUS,
+  overviewFrame,
+  overviewMinPx,
+  overviewPolar,
+} from '../../src/camera/framing';
+import { positionAtMeanAnomaly } from '../../src/bodies/kepler';
+import * as kepler from '../../src/bodies/kepler';
 import { ORBIT_STYLE } from '../../src/bodies/orbitMath';
 
 function textures(): Map<string, THREE.Texture> {
@@ -34,12 +49,68 @@ function make(tier: 'low' | 'high' = 'high') {
   return createSolarSystem(textures(), tierSettings(tier));
 }
 
+type OrbitingBodyId = Exclude<BodyId, 'sun' | 'moon'>;
+const ORBITING = BODY_IDS.filter((id): id is OrbitingBodyId => id !== 'sun' && id !== 'moon');
+
+function orbitShape(id: OrbitingBodyId) {
+  const orbit = BODIES[id].orbit;
+  if (!orbit) throw new Error(`Missing orbit for ${id}`);
+  return {
+    semiMajorAxisDisplay: displaySemiMajorAxis(orbit.semiMajorAxisAu),
+    eccentricity: orbit.eccentricity,
+    inclinationRad: THREE.MathUtils.degToRad(orbit.inclinationDeg),
+    ascendingNodeRad: THREE.MathUtils.degToRad(orbit.longitudeOfAscendingNodeDeg),
+    argumentOfPerihelionRad: THREE.MathUtils.degToRad(orbit.argumentOfPerihelionDeg),
+  };
+}
+
+function meanAnomalyAt(id: OrbitingBodyId, tSec: number): number {
+  const orbit = BODIES[id].orbit;
+  if (!orbit) throw new Error(`Missing orbit for ${id}`);
+  return orbitalAngle(
+    id === 'earth' ? EARTH_YEAR_DAYS : (BODIES[id].physical.orbitalPeriodDays ?? EARTH_YEAR_DAYS),
+    tSec,
+    THREE.MathUtils.degToRad(orbit.meanAnomalyAtEpochDeg),
+  );
+}
+
 describe('createSolarSystem', () => {
   it('has all 11 bodies and 11 pickables', () => {
     const ss = make();
     expect(ss.bodies.size).toBe(11);
     for (const id of BODY_IDS) expect(ss.bodies.has(id)).toBe(true);
     expect(ss.pickables.length).toBe(11);
+  });
+
+  it('uses linear planet radii and preserves the Sun and Moon display sizes', () => {
+    const ss = make();
+    const earthRadius = ss.bodies.get('earth')!.radius;
+    for (const id of ORBITING) {
+      expect(ss.bodies.get(id)!.radius / earthRadius).toBeCloseTo(
+        BODIES[id].physical.diameterKm / BODIES.earth.physical.diameterKm,
+        10,
+      );
+    }
+    for (const id of ['sun', 'moon'] as const) {
+      expect(ss.bodies.get(id)!.radius).toBeCloseTo(
+        displayRadius(BODIES[id].physical.diameterKm),
+        10,
+      );
+    }
+  });
+
+  it('places each planet at its J2000 Kepler position at t=0', () => {
+    const ss = make();
+    ss.update(0);
+    for (const id of ORBITING) {
+      const expected = positionAtMeanAnomaly(orbitShape(id), meanAnomalyAt(id, 0));
+      const actual = worldPos(ss.bodies.get(id)!.mesh);
+      expect([actual.x, actual.y, actual.z], id).toEqual([
+        expect.closeTo(expected[0], 3),
+        expect.closeTo(expected[1], 3),
+        expect.closeTo(expected[2], 3),
+      ]);
+    }
   });
 
   it('returns Earth to its start position after one year (60 s)', () => {
@@ -127,8 +198,7 @@ describe('createSolarSystem', () => {
   });
 
   describe('orbit ribbons', () => {
-    const ORBITING = BODY_IDS.filter((id) => id !== 'sun' && id !== 'moon');
-    type Orbit = { id: BodyId; mesh: THREE.Mesh; mat: THREE.ShaderMaterial };
+    type Orbit = { id: OrbitingBodyId; mesh: THREE.Mesh; mat: THREE.ShaderMaterial };
 
     function orbits(ss: ReturnType<typeof make>): Orbit[] {
       const meshes: THREE.Mesh[] = [];
@@ -145,17 +215,19 @@ describe('createSolarSystem', () => {
     }
     const num = (m: THREE.ShaderMaterial, k: string): number => m.uniforms[k]!.value as number;
 
-    it('draws exactly 9 ShaderMaterial ribbons (no LineLoop) at each orbit radius', () => {
+    it('draws each ribbon on the corresponding Kepler ellipse', () => {
       const ss = make();
       for (const { id, mesh, mat } of orbits(ss)) {
         expect(mesh).toBeInstanceOf(THREE.Mesh);
         expect(mesh).not.toBeInstanceOf(THREE.LineLoop);
         expect(mat).toBeInstanceOf(THREE.ShaderMaterial);
         const p = mesh.geometry.getAttribute('position');
-        expect(Math.hypot(p.getX(0), p.getZ(0)), id).toBeCloseTo(
-          ss.bodies.get(id)!.orbitPivot.children[0]!.position.x,
-          3,
-        );
+        const expected = positionAtMeanAnomaly(orbitShape(id), 0);
+        expect([p.getX(0), p.getY(0), p.getZ(0)], id).toEqual([
+          expect.closeTo(expected[0], 3),
+          expect.closeTo(expected[1], 3),
+          expect.closeTo(expected[2], 3),
+        ]);
       }
     });
 
@@ -167,12 +239,12 @@ describe('createSolarSystem', () => {
       }
     });
 
-    it('feeds uPlanetAngle from orbitPivot.rotation.y after each update', () => {
+    it('feeds each ribbon the mean anomaly returned by the corresponding rig update', () => {
       const ss = make();
       for (const t of [0, 7.3, 123.4]) {
         ss.update(t);
         for (const { id, mat } of orbits(ss)) {
-          expect(num(mat, 'uPlanetAngle'), id).toBe(ss.bodies.get(id)!.orbitPivot.rotation.y);
+          expect(num(mat, 'uPlanetMeanAnomaly'), id).toBeCloseTo(meanAnomalyAt(id, t), 10);
         }
       }
     });
@@ -215,22 +287,28 @@ describe('createSolarSystem', () => {
       expect(e).toBeLessThan(1);
     });
 
-    it('allocates no Vector3 or Color per update', () => {
+    it('does not allocate objects or call the tuple helper per update', () => {
       const ss = make();
       ss.update(1);
       const v3 = vi.spyOn(THREE.Vector3.prototype, 'set');
       const clone = vi.spyOn(THREE.Vector3.prototype, 'clone');
       const colorClone = vi.spyOn(THREE.Color.prototype, 'clone');
       const arr = vi.spyOn(Array, 'from');
-      ss.setOrbitFocus(true);
-      for (let i = 0; i < 10; i++) ss.update(2 + i * 0.1);
-      expect(clone).not.toHaveBeenCalled();
-      expect(colorClone).not.toHaveBeenCalled();
-      expect(arr).not.toHaveBeenCalled();
-      v3.mockRestore();
-      clone.mockRestore();
-      colorClone.mockRestore();
-      arr.mockRestore();
+      const tuplePosition = vi.spyOn(kepler, 'positionAtMeanAnomaly');
+      try {
+        ss.setOrbitFocus(true);
+        for (let i = 0; i < 10; i++) ss.update(2 + i * 0.1);
+        expect(clone).not.toHaveBeenCalled();
+        expect(colorClone).not.toHaveBeenCalled();
+        expect(arr).not.toHaveBeenCalled();
+        expect(tuplePosition).not.toHaveBeenCalled();
+      } finally {
+        v3.mockRestore();
+        clone.mockRestore();
+        colorClone.mockRestore();
+        arr.mockRestore();
+        tuplePosition.mockRestore();
+      }
     });
   });
 
@@ -264,8 +342,14 @@ describe('createSolarSystem', () => {
 });
 
 describe('overview boost', () => {
-  function cameraAt(x: number, y: number, z: number, look: THREE.Vector3 = new THREE.Vector3()) {
-    const camera = new THREE.PerspectiveCamera(50, 390 / 664, 0.1, 20000);
+  function cameraAt(
+    x: number,
+    y: number,
+    z: number,
+    look: THREE.Vector3 = new THREE.Vector3(),
+    aspect = 390 / 664,
+  ) {
+    const camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 20000);
     camera.position.set(x, y, z);
     camera.lookAt(look);
     camera.updateMatrixWorld(true);
@@ -273,6 +357,55 @@ describe('overview boost', () => {
   }
   const scaleOf = (ss: ReturnType<typeof make>, id: BodyId): number =>
     ss.bodies.get(id)!.tiltGroup.scale.x;
+
+  it('keeps every planet above its radius-scaled pixel floor in portrait and landscape overview', () => {
+    const ss = make();
+    ss.update(0);
+    let requiredCap = 1;
+    const floorFailures: string[] = [];
+    const viewports = [
+      { width: 1280, height: 720 },
+      { width: 390, height: 844 },
+    ];
+
+    for (const viewport of viewports) {
+      const aspect = viewport.width / viewport.height;
+      const polar = overviewPolar(aspect);
+      const frame = overviewFrame(OVERVIEW_FIT_RADIUS, 50, aspect, polar);
+      const camera = cameraAt(
+        0,
+        frame.distance * Math.cos(polar),
+        frame.distance * Math.sin(polar),
+        new THREE.Vector3(),
+        aspect,
+      );
+      ss.root.updateMatrixWorld(true);
+      ss.applyOverviewBoost(camera, viewport.height);
+
+      for (const id of ORBITING) {
+        const body = ss.bodies.get(id)!;
+        const basePx =
+          (body.radius /
+            (worldPos(body.mesh).distanceTo(camera.position) * Math.tan((50 * Math.PI) / 360))) *
+          (viewport.height / 2);
+        requiredCap = Math.max(requiredCap, overviewMinPx(body.radius) / basePx);
+        const shownPx = basePx * scaleOf(ss, id);
+
+        expect(scaleOf(ss, id), `${id} overview boost`).toBeLessThanOrEqual(OVERVIEW_MAX_BOOST);
+        if (shownPx < overviewMinPx(body.radius) - 0.01) {
+          floorFailures.push(
+            `${id} ${viewport.width}x${viewport.height}: ${shownPx.toFixed(3)}px < ${overviewMinPx(body.radius).toFixed(3)}px`,
+          );
+        }
+      }
+    }
+
+    expect(floorFailures, `required boost cap ${requiredCap}`).toEqual([]);
+    expect(OVERVIEW_MAX_BOOST, `smallest required boost cap ${requiredCap}`).toBeGreaterThanOrEqual(
+      requiredCap,
+    );
+    expect(OVERVIEW_MAX_BOOST).toBeLessThan(requiredCap + 0.05);
+  });
 
   it('enlarges far bodies in a phone overview, larger bodies stay larger on screen', () => {
     const ss = make();
@@ -295,6 +428,18 @@ describe('overview boost', () => {
     ss.applyOverviewBoost(cameraAt(earth.x + 8, earth.y + 2, earth.z, earth), 664);
     expect(scaleOf(ss, 'earth')).toBe(1);
     expect(ss.bodies.get('moon')!.tiltGroup.visible).toBe(true);
+  });
+
+  it('returns each focused planet to its unboosted base radius', () => {
+    const ss = make();
+    ss.update(0);
+    ss.root.updateMatrixWorld(true);
+    for (const id of ORBITING) {
+      const body = ss.bodies.get(id)!;
+      const pos = worldPos(body.mesh);
+      ss.applyOverviewBoost(cameraAt(pos.x + 8, pos.y + 2, pos.z, pos), 664);
+      expect(scaleOf(ss, id), id).toBe(1);
+    }
   });
 
   it('hides the Moon while a boosted Earth would swallow its orbit, and makes it unpickable', () => {

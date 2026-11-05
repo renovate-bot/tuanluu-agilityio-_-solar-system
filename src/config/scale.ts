@@ -1,4 +1,5 @@
 import type { BodyId } from '../data/types';
+import { BODIES } from '../data/bodies';
 
 /** Real seconds for one Earth orbit. */
 export const EARTH_YEAR_SECONDS = 60;
@@ -15,15 +16,28 @@ export const ASTEROID_BELT_PERIOD_YEARS = 4.6;
 export const EARTH_YEAR_DAYS = 365.25;
 const EARTH_DAY_HOURS = 23.93;
 const TWO_PI = 2 * Math.PI;
+const AU_MKM = 149.5978707;
+const EARTH_DIAMETER_KM = BODIES.earth.physical.diameterKm;
+const PLANET_RADIUS_COEFFICIENT = 0.6 / EARTH_DIAMETER_KM;
 
-/** Compressed (non-linear) body radius in display units. */
+/** Compressed (non-linear) Sun and Moon radius in display units. */
 export function displayRadius(diameterKm: number): number {
-  return 1.2 * (diameterKm / 12756) ** 0.45;
+  return 1.2 * (diameterKm / EARTH_DIAMETER_KM) ** 0.45;
+}
+
+/** Linear planet radius in display units, with one coefficient shared by all planets. */
+export function displayPlanetRadius(diameterKm: number): number {
+  return PLANET_RADIUS_COEFFICIENT * diameterKm;
 }
 
 /** Compressed orbit radius in display units; Mercury lands near 48. */
 export function displayOrbitRadius(distanceMkm: number): number {
   return 20 + 28 * Math.sqrt(distanceMkm / 57.9);
+}
+
+/** Compressed display distance for a semi-major axis given in astronomical units. */
+export function displaySemiMajorAxis(semiMajorAxisAu: number): number {
+  return displayOrbitRadius(semiMajorAxisAu * AU_MKM);
 }
 
 /** Orbital angle in radians at time tSeconds. */
@@ -56,6 +70,6 @@ export const INITIAL_PHASE: Record<BodyId, number> = {
  * many CSS px in radius when it has Earth's display radius; the minimum grows with the square
  * root of the display radius, so the size order between bodies is kept.
  */
-export const OVERVIEW_MIN_BODY_PX = 5;
+export const OVERVIEW_MIN_BODY_PX = 6;
 /** Upper bound of that screen-space scale-up. */
-export const OVERVIEW_MAX_BOOST = 8;
+export const OVERVIEW_MAX_BOOST = 42.29;
