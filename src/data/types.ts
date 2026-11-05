@@ -29,12 +29,22 @@ export interface PhysicalData {
   knownMoons?: number;
 }
 
+export interface OrbitalElements {
+  semiMajorAxisAu: number;
+  eccentricity: number;
+  inclinationDeg: number;
+  longitudeOfAscendingNodeDeg: number;
+  argumentOfPerihelionDeg: number;
+  meanAnomalyAtEpochDeg: number;
+}
+
 export interface BodyDef {
   id: BodyId;
   kind: BodyKind;
   parent: BodyId | null;
   orderFromSun: number | null;
   physical: PhysicalData;
+  orbit?: OrbitalElements;
   /** Hex tint of the orbit ribbon; planets and Pluto only (the Sun and the Moon draw none). */
   orbitColor?: string;
 }

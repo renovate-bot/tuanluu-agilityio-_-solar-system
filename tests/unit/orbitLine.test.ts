@@ -1,12 +1,20 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
+import { positionAtMeanAnomaly, type KeplerOrbitShape } from '../../src/bodies/kepler';
 import { createOrbitLine } from '../../src/bodies/orbitLine';
 import { ORBIT_STYLE } from '../../src/bodies/orbitMath';
 
 const N = ORBIT_STYLE.segments;
+const SHAPE: KeplerOrbitShape = {
+  semiMajorAxisDisplay: 80,
+  eccentricity: 0.2,
+  inclinationRad: THREE.MathUtils.degToRad(35),
+  ascendingNodeRad: THREE.MathUtils.degToRad(20),
+  argumentOfPerihelionRad: THREE.MathUtils.degToRad(15),
+};
 
 function make() {
-  return createOrbitLine(80, '#6fb6ff');
+  return createOrbitLine(SHAPE, '#6fb6ff');
 }
 
 function mat(o: ReturnType<typeof make>): THREE.ShaderMaterial {
@@ -27,11 +35,12 @@ describe('createOrbitLine', () => {
     expect(o.object.frustumCulled).toBe(false);
   });
 
-  it('is a closed strip: 2 * (segments + 1) vertices and 6 * segments indices', () => {
+  it('is a closed strip with phase and tangent attributes', () => {
     const geo = make().object.geometry;
     expect(geo.getAttribute('position').count).toBe(2 * (N + 1));
     expect(geo.getAttribute('aSide').count).toBe(2 * (N + 1));
-    expect(geo.getAttribute('aAngle').count).toBe(2 * (N + 1));
+    expect(geo.getAttribute('aPhase').count).toBe(2 * (N + 1));
+    expect(geo.getAttribute('aTangent').count).toBe(2 * (N + 1));
     expect(geo.getIndex()?.count).toBe(6 * N);
     const idx = geo.getIndex()!;
     for (let i = 0; i < idx.count; i++) {
@@ -39,26 +48,37 @@ describe('createOrbitLine', () => {
     }
   });
 
-  it('puts the centre line on a circle of radius 80 in the XZ plane, angle a at (r cos a, 0, -r sin a)', () => {
+  it('samples the inclined Kepler ellipse and preserves phase at the closed seam', () => {
     const geo = make().object.geometry;
     const pos = geo.getAttribute('position');
     const side = geo.getAttribute('aSide');
-    const ang = geo.getAttribute('aAngle');
+    const phase = geo.getAttribute('aPhase');
     for (let i = 0; i < pos.count; i++) {
-      const a = ang.getX(i);
-      expect(pos.getX(i)).toBeCloseTo(80 * Math.cos(a), 3);
-      expect(pos.getY(i)).toBe(0);
-      expect(pos.getZ(i)).toBeCloseTo(-80 * Math.sin(a), 3);
-      expect(Math.hypot(pos.getX(i), pos.getZ(i))).toBeCloseTo(80, 3);
+      const meanAnomaly = phase.getX(i);
+      const expected = positionAtMeanAnomaly(SHAPE, meanAnomaly);
+      expect([pos.getX(i), pos.getY(i), pos.getZ(i)]).toEqual(
+        expected.map((coordinate) => expect.closeTo(coordinate, 3)),
+      );
       expect(Math.abs(side.getX(i))).toBe(1);
     }
-    // Both sides of each station share the angle; the seam is duplicated (0 and 2π).
-    expect(ang.getX(0)).toBe(0);
-    expect(ang.getX(1)).toBe(0);
+    // At M=π/2, the sampled point has the expected nonzero inclination and eccentricity.
+    expect(phase.getX(2 * (N / 4))).toBeCloseTo(Math.PI / 2, 5);
+    expect(pos.getX(2 * (N / 4))).toBeCloseTo(-65.88845879, 3);
+    expect(pos.getY(2 * (N / 4))).toBeCloseTo(37.90420107, 3);
+    expect(pos.getZ(2 * (N / 4))).toBeCloseTo(-33.62549453, 3);
+    // Both sides of each station share the phase; the seam is duplicated as 0 and 2π.
+    expect(phase.getX(0)).toBe(0);
+    expect(phase.getX(1)).toBe(0);
     expect(side.getX(0)).toBe(-side.getX(1));
-    expect(ang.getX(2 * N)).toBeCloseTo(Math.PI * 2, 5);
-    expect(ang.getX(2 * N + 1)).toBeCloseTo(Math.PI * 2, 5);
-    expect(ang.getX(2 * 64)).toBeCloseTo((64 / N) * Math.PI * 2, 5);
+    expect(phase.getX(2 * N)).toBeCloseTo(Math.PI * 2, 5);
+    expect(phase.getX(2 * N + 1)).toBeCloseTo(Math.PI * 2, 5);
+    expect(phase.getX(2 * 64)).toBeCloseTo((64 / N) * Math.PI * 2, 5);
+    const tangent = geo.getAttribute('aTangent');
+    for (let i = 0; i < tangent.count; i++) {
+      expect(Number.isFinite(tangent.getX(i))).toBe(true);
+      expect(Number.isFinite(tangent.getY(i))).toBe(true);
+      expect(Number.isFinite(tangent.getZ(i))).toBe(true);
+    }
   });
 
   it('uses an additive, transparent ShaderMaterial that tests depth but does not write it', () => {
@@ -85,11 +105,11 @@ describe('createOrbitLine', () => {
     expect(u.uPixelRatio!.value).toBe(2);
   });
 
-  it('setPlanetAngle and setEmphasis set their uniforms, emphasis clamped to 0..1', () => {
+  it('setPlanetMeanAnomaly and setEmphasis set their uniforms, emphasis clamped to 0..1', () => {
     const o = make();
     const u = mat(o).uniforms;
-    o.setPlanetAngle(1.25);
-    expect(u.uPlanetAngle!.value).toBe(1.25);
+    o.setPlanetMeanAnomaly(1.25);
+    expect(u.uPlanetMeanAnomaly!.value).toBe(1.25);
     o.setEmphasis(0.3);
     expect(u.uEmphasis!.value).toBe(0.3);
     o.setEmphasis(4);
