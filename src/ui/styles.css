@@ -485,3 +485,74 @@ body {
     order: 1;
   }
 }
+
+/* Language picker (spec §3.2): centred dialog on desktop, bottom sheet on mobile. */
+.lang-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(2, 3, 10, 0.6);
+}
+.lang-overlay[hidden] {
+  display: none;
+}
+.lang-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(360px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border-radius: 14px;
+}
+.lang-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.lang-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lang-option {
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  font-size: 1rem;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.lang-option[aria-current='true'] {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.12);
+}
+.lang-check {
+  visibility: hidden;
+}
+.lang-option[aria-current='true'] .lang-check {
+  visibility: visible;
+}
+.lang-close {
+  align-self: flex-end;
+}
+.lang-overlay[data-layout='mobile'] {
+  align-items: flex-end;
+  padding: 0;
+}
+.lang-overlay[data-layout='mobile'] .lang-dialog {
+  width: 100%;
+  border-radius: 14px 14px 0 0;
+  padding: 16px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+.lang-overlay[data-layout='mobile'] .lang-close {
+  align-self: stretch;
+}

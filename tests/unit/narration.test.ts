@@ -37,17 +37,37 @@ describe('cueAt', () => {
 describe('estimateDurationMs', () => {
   it('uses 400 ms per word', () => {
     const words = Array.from({ length: 20 }, () => 'word').join(' ');
-    expect(estimateDurationMs(words)).toBe(8000);
+    expect(estimateDurationMs(words, 'en')).toBe(8000);
   });
 
   it('has a 4000 ms minimum', () => {
-    expect(estimateDurationMs('Hi there')).toBe(4000);
-    expect(estimateDurationMs('')).toBe(4000);
+    expect(estimateDurationMs('Hi there', 'en')).toBe(4000);
+    expect(estimateDurationMs('', 'en')).toBe(4000);
+    expect(estimateDurationMs('', 'ja')).toBe(4000);
+  });
+
+  it('keeps the Vietnamese count (one syllable per space-separated word)', () => {
+    const text = Array.from({ length: 15 }, () => 'sao').join(' ');
+    expect(estimateDurationMs(text, 'vi')).toBe(6000);
+  });
+
+  it('segments Japanese text without spaces into words', () => {
+    // Real tour sentences, about 50 characters and no spaces: a whitespace count
+    // gives one word (the 4 s minimum); word segmentation gives a spoken length.
+    const text =
+      '太陽の光が地球に届くまで約8分かかります。つまり私たちが見ている太陽は、いつも8分前の姿なのです。';
+    const ms = estimateDurationMs(text, 'ja');
+    expect(ms).toBeGreaterThan(6000);
+    expect(ms).toBeLessThan(20000);
+  });
+
+  it('does not count punctuation as words', () => {
+    expect(estimateDurationMs('。。。！！！？？？、、、', 'ja')).toBe(4000);
   });
 
   it('counts words separated by any whitespace', () => {
     const text = Array.from({ length: 12 }, () => 'w').join('\n  ');
-    expect(estimateDurationMs(text)).toBe(4800);
+    expect(estimateDurationMs(text, 'en')).toBe(4800);
   });
 });
 
@@ -79,7 +99,7 @@ describe('resolveSegment', () => {
   it('falls back to subtitle-only when the manifest is null', () => {
     const seg = resolveSegment(null, 'saturn', 'vi', TEXT);
     expect(seg.audio).toBe(false);
-    expect(seg.durationMs).toBe(estimateDurationMs(TEXT));
+    expect(seg.durationMs).toBe(estimateDurationMs(TEXT, 'vi'));
     expect(seg.cues.map((c) => c.text)).toEqual([
       'Saturn has rings.',
       'They are made of ice!',
@@ -90,7 +110,7 @@ describe('resolveSegment', () => {
   it('falls back when the language entry is missing', () => {
     const seg = resolveSegment(MANIFEST, 'saturn', 'en', TEXT);
     expect(seg.audio).toBe(false);
-    expect(seg.durationMs).toBe(estimateDurationMs(TEXT));
+    expect(seg.durationMs).toBe(estimateDurationMs(TEXT, 'en'));
     expect(seg.cues).toHaveLength(3);
   });
 
@@ -111,5 +131,58 @@ describe('resolveSegment', () => {
     const seg = resolveSegment(null, 'saturn', 'en', '   ');
     expect(seg.cues).toEqual([]);
     expect(seg.audio).toBe(false);
+  });
+
+  it('splits Japanese fallback cues on 。！？ into contiguous covering cues', () => {
+    const JA = '土星には環があります。氷でできています！古いのでしょうか？';
+    const seg = resolveSegment(null, 'saturn', 'ja', JA);
+    expect(seg.audio).toBe(false);
+    expect(seg.durationMs).toBe(estimateDurationMs(JA, 'ja'));
+    expect(seg.cues.map((c) => c.text)).toEqual([
+      '土星には環があります。',
+      '氷でできています！',
+      '古いのでしょうか？',
+    ]);
+    expect(seg.cues[0]?.startMs).toBe(0);
+    expect(seg.cues[1]?.startMs).toBe(seg.cues[0]?.endMs);
+    expect(seg.cues[2]?.startMs).toBe(seg.cues[1]?.endMs);
+    expect(seg.cues[2]?.endMs).toBe(seg.durationMs);
+    // 11 + 9 + 9 = 29 characters, so the first cue covers 11/29 of the duration.
+    expect(seg.cues[0]?.endMs).toBe(Math.round((seg.durationMs * 11) / 29));
+  });
+
+  it('keeps a decimal point inside a Japanese sentence', () => {
+    const seg = resolveSegment(
+      null,
+      'earth',
+      'ja',
+      '地軸は約23.5度傾いています。季節が生まれます。',
+    );
+    expect(seg.cues.map((c) => c.text)).toEqual([
+      '地軸は約23.5度傾いています。',
+      '季節が生まれます。',
+    ]);
+  });
+});
+
+describe('narration fallback portability', () => {
+  it('uses no regex lookbehind (unsupported before Safari 16.4, breaks the bundle parse)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync('src/tour/narration.ts', 'utf8');
+    expect(src).not.toMatch(/\(\?<[=!]/);
+  });
+
+  it('estimates duration without Intl.Segmenter (Firefox before 125)', () => {
+    const original = Object.getOwnPropertyDescriptor(Intl, 'Segmenter')!;
+    Reflect.deleteProperty(Intl, 'Segmenter'); // simulate an engine without it
+    try {
+      const words = Array.from({ length: 20 }, () => 'word').join(' ');
+      expect(estimateDurationMs(words, 'en')).toBe(8000);
+      const ja =
+        '太陽の光が地球に届くまで約8分かかります。つまり私たちが見ている太陽は、いつも8分前の姿なのです。';
+      expect(estimateDurationMs(ja, 'ja')).toBeGreaterThan(6000);
+    } finally {
+      Object.defineProperty(Intl, 'Segmenter', original);
+    }
   });
 });

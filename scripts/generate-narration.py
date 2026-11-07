@@ -1,6 +1,6 @@
 """Generate Edge TTS narration mp3 files and the cue manifest.
 
-Reads src/data/tour/{vi,en}.json, writes public/audio/narration/<stopId>.<lang>.mp3
+Reads src/data/tour/{vi,en,ja}.json, writes public/audio/narration/<stopId>.<lang>.mp3
 and public/audio/narration/manifest.json. edge_tts is imported lazily so the pure
 helpers (and their unit tests) work without it.
 """
@@ -17,7 +17,7 @@ TOUR_DIR = ROOT / "src" / "data" / "tour"
 OUT_DIR = ROOT / "public" / "audio" / "narration"
 MANIFEST_PATH = OUT_DIR / "manifest.json"
 
-VOICES = {"vi": "vi-VN-HoaiMyNeural", "en": "en-US-AvaNeural"}
+VOICES = {"vi": "vi-VN-HoaiMyNeural", "en": "en-US-AvaNeural", "ja": "ja-JP-NanamiNeural"}
 RETRY_DELAYS = (2, 4, 8)
 MP3_BITRATE = 48_000  # bits per second, used for the duration fallback
 
@@ -31,8 +31,13 @@ def text_hash(text, voice):
     return hashlib.sha256(f"{voice}\n{text}".encode("utf-8")).hexdigest()
 
 
+# A sentence ends at a run of . ! ? or the Japanese terminators; a '.' between two
+# digits (23.5) is a decimal point. Mirrors splitSentences() in src/tour/narration.ts.
+SENTENCE_RE = re.compile(r"(?:\d\.(?=\d)|[^.!?。！？])+(?:[.!?。！？]+|$)")
+
+
 def split_sentences(text):
-    parts = re.findall(r"[^.!?]+[.!?]+|[^.!?]+$", text.strip())
+    parts = SENTENCE_RE.findall(text.strip())
     return [p.strip() for p in parts if p.strip()]
 
 
@@ -70,6 +75,30 @@ def make_contiguous(cues, duration_ms):
     return out
 
 
+def align_cue_text(cues, text):
+    """Replace each cue's text with the matching slice of the source script.
+
+    Edge TTS sometimes rewrites punctuation in its boundary text (Japanese "・"
+    comes back as "、"). When the cues hold the same number of non-space
+    characters as the source, each cue takes the source slice of its length, so
+    subtitles show the script exactly. Otherwise the cues are returned unchanged.
+    """
+    lengths = [len(re.sub(r"\s+", "", c["text"])) for c in cues]
+    if sum(lengths) != len(re.sub(r"\s+", "", text)):
+        return cues
+    out = []
+    pos = 0
+    for cue, length in zip(cues, lengths):
+        start = pos
+        seen = 0
+        while seen < length:
+            if not text[pos].isspace():
+                seen += 1
+            pos += 1
+        out.append({**cue, "text": text[start:pos].strip()})
+    return out
+
+
 def needs_regen(entry, new_hash, mp3_exists):
     return entry is None or entry.get("hash") != new_hash or not mp3_exists
 
@@ -99,7 +128,7 @@ async def synthesize(text, voice):
     if not cues:
         cues = fallback_cues(split_sentences(text), duration)
     else:
-        cues = make_contiguous(cues, duration)
+        cues = align_cue_text(make_contiguous(cues, duration), text)
     return data, cues, duration
 
 
@@ -135,9 +164,11 @@ async def run():
     manifest["version"] = 1
     manifest["voices"] = dict(VOICES)
     segments = manifest.setdefault("segments", {})
-    for by_lang in segments.values():
-        for entry in by_lang.values():
-            entry["cues"] = make_contiguous(entry["cues"], entry["durationMs"])
+    for stop_id, by_lang in segments.items():
+        for lang, entry in by_lang.items():
+            cues = make_contiguous(entry["cues"], entry["durationMs"])
+            source = sources.get(lang, {}).get(stop_id)
+            entry["cues"] = align_cue_text(cues, source["text"]) if source else cues
     failed = False
 
     for lang, stops in sources.items():

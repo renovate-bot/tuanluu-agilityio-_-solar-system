@@ -3,7 +3,7 @@ import type { AppState } from '../state/appState';
 import type { Store } from '../state/store';
 
 export interface ControlActions {
-  toggleLang(): void;
+  openLanguagePicker(): void;
   toggleMute(): void;
   toggleTour(): void;
   openCredits(): void;
@@ -37,7 +37,8 @@ export function createControlBar(
 
   const cluster = document.createElement('div');
   cluster.className = 'control-cluster';
-  const lang = button('lang');
+  const lang = button('lang', '文A');
+  lang.setAttribute('aria-haspopup', 'dialog');
   const sound = button('sound');
   const tour = button('tour');
   const tourIcon = document.createElement('span');
@@ -61,7 +62,6 @@ export function createControlBar(
     const s = store.get();
     document.documentElement.lang = s.lang;
     title.textContent = t(s.lang, 'appTitle');
-    lang.textContent = s.lang === 'vi' ? 'VI|en' : 'vi|EN';
     lang.setAttribute('aria-label', t(s.lang, 'lang.switch'));
     // The label names the action, like `tour.start`: muted -> "Sound on".
     sound.textContent = s.muted ? '🔇' : '🔊';
@@ -84,7 +84,7 @@ export function createControlBar(
     hintDismissed = true;
     hint.hidden = true;
   };
-  lang.addEventListener('click', () => actions.toggleLang());
+  lang.addEventListener('click', () => actions.openLanguagePicker());
   sound.addEventListener('click', () => actions.toggleMute());
   tour.addEventListener('click', () => actions.toggleTour());
   credits.addEventListener('click', () => actions.openCredits());

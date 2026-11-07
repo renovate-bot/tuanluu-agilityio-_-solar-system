@@ -35,7 +35,9 @@ test('selecting a body shows the panel in the right place', async ({ page }) => 
   else expect(box.x).toBeLessThan(400);
 });
 
-test('language switch retitles the open panel and back returns to overview', async ({ page }) => {
+test('switching to Japanese retitles the open panel, keeps it, and back returns to overview', async ({
+  page,
+}) => {
   // Reload-based and close to the 60 s limit under load on software GL.
   test.slow();
   await boot(page);
@@ -50,7 +52,15 @@ test('language switch retitles the open panel and back returns to overview', asy
   const title = page.getByTestId('panel').locator('h2');
   await expect(title).toHaveText('Earth', { timeout: 25_000 });
   await page.getByTestId('lang').click();
-  await expect(title).toHaveText('Trái Đất', { timeout: 25_000 });
+  await expect(page.getByTestId('lang-picker')).toBeVisible({ timeout: 25_000 });
+  // Opening the picker keeps the panel and the selection.
+  await expect(page.getByTestId('panel')).toBeVisible();
+  await page.getByTestId('lang-option-ja').click();
+  await expect(title).toHaveText('地球', { timeout: 25_000 });
+  await expect(page.getByTestId('panel')).toBeVisible();
+  expect(
+    await page.evaluate(() => (window as unknown as AppWindow).__app.getState().selected),
+  ).toBe('earth');
   await page.getByTestId('back').click();
   await expect(page.getByTestId('panel')).toBeHidden({ timeout: 25_000 });
   expect(await page.evaluate(() => (window as unknown as AppWindow).__app.getState().view)).toBe(
@@ -71,6 +81,31 @@ test('resizing between layouts keeps the selection and switches the panel', asyn
     timeout: 25_000,
   });
   await expect(page.getByTestId('panel').locator('h2')).toBeVisible();
+  expect(
+    await page.evaluate(() => (window as unknown as AppWindow).__app.getState().selected),
+  ).toBe('mars');
+});
+
+test('the language picker opens over an open mobile panel at 320px and keeps it', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await boot(page);
+  await select(page, 'mars');
+  const panel = page.getByTestId('panel');
+  await expect(panel).toHaveAttribute('data-layout', 'mobile', { timeout: 25_000 });
+  await expect(panel).toBeVisible({ timeout: 25_000 });
+  await page.getByTestId('lang').click();
+  const dialog = page.getByTestId('lang-picker').getByRole('dialog');
+  await expect(dialog).toBeVisible({ timeout: 25_000 });
+  const box = (await dialog.boundingBox())!;
+  expect(box.x + box.width).toBeLessThanOrEqual(320.5);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(panel).toBeVisible();
+  await page.getByTestId('lang').click();
+  await page.getByTestId('lang-option-ja').click();
+  await expect(panel.locator('h2')).toHaveText('火星', { timeout: 25_000 });
   expect(
     await page.evaluate(() => (window as unknown as AppWindow).__app.getState().selected),
   ).toBe('mars');

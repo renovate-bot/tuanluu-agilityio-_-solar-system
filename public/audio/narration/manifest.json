@@ -2,7 +2,8 @@
   "version": 1,
   "voices": {
     "vi": "vi-VN-HoaiMyNeural",
-    "en": "en-US-AvaNeural"
+    "en": "en-US-AvaNeural",
+    "ja": "ja-JP-NanamiNeural"
   },
   "segments": {
     "intro": {
@@ -84,6 +85,58 @@
             "text": "Let's go!"
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/intro.ja.mp3",
+        "durationMs": 39837,
+        "hash": "855184ce00dcbe42858d58c6c6af2d7dd5067a2cfb43a9b604ac3df160ee9367",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3375,
+            "text": "太陽系エクスプローラーへようこそ！"
+          },
+          {
+            "startMs": 3375,
+            "endMs": 10837,
+            "text": "これから私がガイドとなって、燃えさかる恒星から、凍てつく惑星の果てまでご案内します。"
+          },
+          {
+            "startMs": 10837,
+            "endMs": 14550,
+            "text": "途中でドラッグすると周りを見渡せます。"
+          },
+          {
+            "startMs": 14550,
+            "endMs": 21262,
+            "text": "ピンチやスクロールでズームでき、天体をタップするとそこまで一気に飛んでいけます。"
+          },
+          {
+            "startMs": 21262,
+            "endMs": 27800,
+            "text": "画面に触れるとツアーは一時停止しますが、いつでも続きから再開できます。"
+          },
+          {
+            "startMs": 27800,
+            "endMs": 30150,
+            "text": "ひとつだけ注意です。"
+          },
+          {
+            "startMs": 30150,
+            "endMs": 34988,
+            "text": "ここでの大きさと距離は、実際の縮尺ではありません。"
+          },
+          {
+            "startMs": 34988,
+            "endMs": 37113,
+            "text": "準備はいいですか？"
+          },
+          {
+            "startMs": 37113,
+            "endMs": 39837,
+            "text": "さあ、出発しましょう！"
+          }
+        ]
       }
     },
     "sun": {
@@ -133,6 +186,48 @@
             "startMs": 21350,
             "endMs": 28600,
             "text": "Here's the surprise: sunlight takes about eight minutes to reach Earth, so you always see the Sun as it was eight minutes ago."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/sun.ja.mp3",
+        "durationMs": 39326,
+        "hash": "d9010cc339aa8200f8ec9904133bdd18dc108403095adea4891acefe62bc3dde",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2338,
+            "text": "まずは太陽です。"
+          },
+          {
+            "startMs": 2338,
+            "endMs": 5550,
+            "text": "すべての中心にある恒星です。"
+          },
+          {
+            "startMs": 5550,
+            "endMs": 12925,
+            "text": "直径は約140万キロメートルで、中には地球がおよそ130万個も入ります。"
+          },
+          {
+            "startMs": 12925,
+            "endMs": 21587,
+            "text": "中心核では、約1500万度という高温で核融合が起こり、水素がヘリウムに変わっています。"
+          },
+          {
+            "startMs": 21587,
+            "endMs": 27026,
+            "text": "一方、光り輝く表面の温度は5500度ほどです。"
+          },
+          {
+            "startMs": 27026,
+            "endMs": 33437,
+            "text": "驚きなのは、太陽の光が地球に届くまで約8分かかることです。"
+          },
+          {
+            "startMs": 33437,
+            "endMs": 39326,
+            "text": "つまり私たちが見ている太陽は、いつも8分前の姿なのです。"
           }
         ]
       }
@@ -191,6 +286,43 @@
             "text": "And here's a twist: one sunrise to the next on Mercury takes 176 Earth days, a full two Mercury years."
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/mercury.ja.mp3",
+        "durationMs": 43613,
+        "hash": "62ba8e4e591ee90f4dbdaa0ba1be24371da388298fc6951fac067460a1c02124",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2462,
+            "text": "次は水星です。"
+          },
+          {
+            "startMs": 2462,
+            "endMs": 11087,
+            "text": "最も小さな惑星で、太陽にいちばん近く、その距離はわずか約5800万キロメートルです。"
+          },
+          {
+            "startMs": 11087,
+            "endMs": 23050,
+            "text": "直径は4879キロメートルしかなく、月より少し大きいだけで、地球の日数でたった88日で太陽のまわりを一周します。"
+          },
+          {
+            "startMs": 23050,
+            "endMs": 32425,
+            "text": "熱を保つ空気がほとんどないため、昼は約430度に達し、夜はマイナス180度まで冷え込みます。"
+          },
+          {
+            "startMs": 32425,
+            "endMs": 40237,
+            "text": "さらに不思議なことに、水星で日の出から次の日の出までは地球の176日かかります。"
+          },
+          {
+            "startMs": 40237,
+            "endMs": 43613,
+            "text": "これは水星の2年分にあたります。"
+          }
+        ]
       }
     },
     "venus": {
@@ -240,6 +372,43 @@
             "startMs": 20700,
             "endMs": 32662,
             "text": "Stranger still, Venus spins backwards, so the Sun rises in the west, and a single day there, 243 Earth days, lasts longer than its 225-day year."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/venus.ja.mp3",
+        "durationMs": 40662,
+        "hash": "f57c1d82e8f5896943e71451430f80c2d762e1f31040e9f56c71526a6772994c",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3100,
+            "text": "続いて金星に到着です。"
+          },
+          {
+            "startMs": 3100,
+            "endMs": 9562,
+            "text": "直径は1万2104キロメートルで、大きさは地球の双子のようです。"
+          },
+          {
+            "startMs": 9562,
+            "endMs": 13250,
+            "text": "でも、旅行の準備はやめておきましょう。"
+          },
+          {
+            "startMs": 13250,
+            "endMs": 24738,
+            "text": "分厚い二酸化炭素の大気と硫酸の雲が暴走温室効果で熱を閉じ込め、地表は約465度、鉛が溶けるほどの高温です。"
+          },
+          {
+            "startMs": 24738,
+            "endMs": 32200,
+            "text": "さらに奇妙なことに、金星は逆向きに自転しているので、太陽は西から昇ります。"
+          },
+          {
+            "startMs": 32200,
+            "endMs": 40662,
+            "text": "そして金星の1日、地球の243日は、225日の1年よりも長いのです。"
           }
         ]
       }
@@ -308,6 +477,48 @@
             "text": "Fun fact: Earth is the only planet in our system not named after a Greek or Roman god."
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/earth.ja.mp3",
+        "durationMs": 40712,
+        "hash": "824c90823bc610b19c0bc1f8f4f1d462f9a784536b5a93e560f2ee8446e2e1e8",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 1988,
+            "text": "おかえりなさい！"
+          },
+          {
+            "startMs": 1988,
+            "endMs": 4013,
+            "text": "ここが地球です。"
+          },
+          {
+            "startMs": 4013,
+            "endMs": 12474,
+            "text": "直径は1万2756キロメートル、太陽から約1億5000万キロメートル離れています。"
+          },
+          {
+            "startMs": 12474,
+            "endMs": 23837,
+            "text": "生命が知られている唯一の世界で、地表に液体の水がある唯一の天体でもあり、その水は地表の約70パーセントを覆っています。"
+          },
+          {
+            "startMs": 23837,
+            "endMs": 30650,
+            "text": "地軸は約23.5度傾いていて、この傾きが季節を生み出しています。"
+          },
+          {
+            "startMs": 30650,
+            "endMs": 32650,
+            "text": "豆知識です。"
+          },
+          {
+            "startMs": 32650,
+            "endMs": 40712,
+            "text": "地球は太陽系の惑星の中で、ギリシャやローマの神の名前が付いていない唯一の惑星なのです。"
+          }
+        ]
       }
     },
     "mars": {
@@ -357,6 +568,43 @@
             "startMs": 27375,
             "endMs": 35563,
             "text": "Mars is also home to Olympus Mons, the largest volcano in the Solar System, about three times the height of Mount Everest."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/mars.ja.mp3",
+        "durationMs": 40000,
+        "hash": "971980dfd4ef73da288f7c4c129d8524d0d838f82716677fdfdcda3d850117a5",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3612,
+            "text": "こちらは赤い惑星、火星です。"
+          },
+          {
+            "startMs": 3612,
+            "endMs": 8712,
+            "text": "太陽から約2億2800万キロメートル離れています。"
+          },
+          {
+            "startMs": 8712,
+            "endMs": 14500,
+            "text": "さびたような赤い色は、ちりに含まれる鉄の鉱物によるものです。"
+          },
+          {
+            "startMs": 14500,
+            "endMs": 21100,
+            "text": "直径は6792キロメートルで、地球の約半分の大きさです。"
+          },
+          {
+            "startMs": 21100,
+            "endMs": 31950,
+            "text": "1日は24時間半あまりですが、1年は地球の687日もかかり、平均気温はマイナス65度と冷え込みます。"
+          },
+          {
+            "startMs": 31950,
+            "endMs": 40000,
+            "text": "火星には太陽系最大の火山、オリンポス山もあり、その高さはエベレストの約3倍です。"
           }
         ]
       }
@@ -418,6 +666,43 @@
             "startMs": 23212,
             "endMs": 29650,
             "text": "And unlike in the movies, the belt is mostly empty space, so spacecraft fly right through it."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/asteroid-belt.ja.mp3",
+        "durationMs": 38938,
+        "hash": "db98a11ebe5e8808de0640211124975bce91a9e3adca4f34bf65d015b97913c3",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4538,
+            "text": "火星と木星の間にあるのが小惑星帯です。"
+          },
+          {
+            "startMs": 4538,
+            "endMs": 11063,
+            "text": "惑星が誕生したときに残された岩のかけらが、広い輪のように集まっています。"
+          },
+          {
+            "startMs": 11063,
+            "endMs": 19137,
+            "text": "直径1キロメートルを超える小惑星が、110万個から190万個あると推定されています。"
+          },
+          {
+            "startMs": 19137,
+            "endMs": 25513,
+            "text": "木星の強い重力のせいで、これらが惑星にまとまることはありませんでした。"
+          },
+          {
+            "startMs": 25513,
+            "endMs": 29987,
+            "text": "それでも、すべてを合わせても月より軽いのです。"
+          },
+          {
+            "startMs": 29987,
+            "endMs": 38938,
+            "text": "そして映画とは違い、小惑星帯はほとんどが何もない空間なので、探査機はそのまま通り抜けていきます。"
           }
         ]
       }
@@ -486,6 +771,43 @@
             "text": "Jupiter has 115 known moons, including Ganymede, the largest moon of all."
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/jupiter.ja.mp3",
+        "durationMs": 38287,
+        "hash": "11959defe98d9aa8a0b004ec032ff74759bd4918852c97ebce69a5451039361a",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2888,
+            "text": "木星にごあいさつしましょう。"
+          },
+          {
+            "startMs": 2888,
+            "endMs": 5376,
+            "text": "太陽系の巨人です。"
+          },
+          {
+            "startMs": 5376,
+            "endMs": 16537,
+            "text": "直径は約14万3000キロメートルで、中には地球がおよそ1000個入り、質量はほかのすべての惑星を合わせた2倍以上もあります。"
+          },
+          {
+            "startMs": 16537,
+            "endMs": 23700,
+            "text": "それなのに、どの惑星よりも速く自転していて、1日はわずか約10時間です。"
+          },
+          {
+            "startMs": 23700,
+            "endMs": 30112,
+            "text": "大赤斑は地球より大きな嵐で、300年以上も吹き荒れています。"
+          },
+          {
+            "startMs": 30112,
+            "endMs": 38287,
+            "text": "木星には115個の衛星が知られており、その中には最大の衛星ガニメデも含まれています。"
+          }
+        ]
       }
     },
     "saturn": {
@@ -545,6 +867,38 @@
             "startMs": 25375,
             "endMs": 30150,
             "text": "Saturn is less dense than water, so in a big enough bathtub, it would float!"
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/saturn.ja.mp3",
+        "durationMs": 37488,
+        "hash": "8ffdc2761c9420fa96f7c8fb1e52bc7db1ef5f1bfa3c9775eefe319b04b72c3b",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4488,
+            "text": "そしてこちらが土星、太陽系の宝石です。"
+          },
+          {
+            "startMs": 4488,
+            "endMs": 16538,
+            "text": "まばゆい環は氷と岩の何十億ものかけらでできていて、差し渡しは数十万キロメートルにも広がりますが、多くの場所で厚さはわずか約10メートルです。"
+          },
+          {
+            "startMs": 16538,
+            "endMs": 27876,
+            "text": "土星の直径は約12万キロメートルで、293個の衛星が知られており、その中には液体メタンの湖があるタイタンもあります。"
+          },
+          {
+            "startMs": 27876,
+            "endMs": 30750,
+            "text": "いちばんの驚きは何でしょう？"
+          },
+          {
+            "startMs": 30750,
+            "endMs": 37488,
+            "text": "土星は水よりも密度が低いので、十分に大きなお風呂があれば浮かんでしまうのです！"
           }
         ]
       }
@@ -608,6 +962,43 @@
             "text": "Uranus was also the first planet discovered with a telescope, by William Herschel in 1781."
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/uranus.ja.mp3",
+        "durationMs": 45275,
+        "hash": "b5caf8417129ede139d50a36144486ff326f86f7665f0e4108be70d7edab9ac0",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4112,
+            "text": "寒い宇宙の奥で出会うのは天王星です。"
+          },
+          {
+            "startMs": 4112,
+            "endMs": 9000,
+            "text": "直径約5万1000キロメートルの巨大氷惑星です。"
+          },
+          {
+            "startMs": 9000,
+            "endMs": 14262,
+            "text": "大気中のメタンが、やわらかな青緑色を生み出しています。"
+          },
+          {
+            "startMs": 14262,
+            "endMs": 25324,
+            "text": "いちばん変わっているのはその傾きで、天王星は約98度も倒れていて、横倒しのまま太陽のまわりを転がるように回っています。"
+          },
+          {
+            "startMs": 25324,
+            "endMs": 36575,
+            "text": "1周には約84年かかるため、それぞれの極では約21年間日が当たり続け、その後21年間暗闇が続きます。"
+          },
+          {
+            "startMs": 36575,
+            "endMs": 45275,
+            "text": "天王星は、1781年にウィリアム・ハーシェルが望遠鏡で発見した最初の惑星でもあります。"
+          }
+        ]
       }
     },
     "neptune": {
@@ -664,6 +1055,43 @@
             "text": "Neptune was the first planet found with mathematics: astronomers predicted where it had to be from the way it tugged on Uranus, and Johann Galle spotted it in 1846 on his very first night of searching."
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/neptune.ja.mp3",
+        "durationMs": 41125,
+        "hash": "d3d812906b08403e63843e12a9d11e142fc9f9e1a7e10aae704ce2f582891335",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2575,
+            "text": "次は海王星です。"
+          },
+          {
+            "startMs": 2575,
+            "endMs": 9150,
+            "text": "最も遠くにある惑星で、太陽から約45億キロメートル離れています。"
+          },
+          {
+            "startMs": 9150,
+            "endMs": 18138,
+            "text": "この深い青色の世界には、時速2000キロメートルを超える、太陽系で最も速い風が吹き荒れています。"
+          },
+          {
+            "startMs": 18138,
+            "endMs": 24113,
+            "text": "太陽のまわりを1周するのに、地球の約165年かかります。"
+          },
+          {
+            "startMs": 24113,
+            "endMs": 28950,
+            "text": "海王星は数学によって見つかった最初の惑星です。"
+          },
+          {
+            "startMs": 28950,
+            "endMs": 41125,
+            "text": "天文学者たちは天王星を引っ張る様子からその位置を予測し、ヨハン・ガレが1846年、探し始めたまさに最初の夜に見つけました。"
+          }
+        ]
       }
     },
     "pluto": {
@@ -718,6 +1146,43 @@
             "startMs": 27338,
             "endMs": 35026,
             "text": "When New Horizons flew past in 2015, it revealed icy mountains and a giant heart-shaped glacier."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/pluto.ja.mp3",
+        "durationMs": 47550,
+        "hash": "6f2483ba2078db33cd4d20a22af58d46503195aaa2f30b0cb15dfce7aed07ff5",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3538,
+            "text": "最後の目的地は冥王星です。"
+          },
+          {
+            "startMs": 3538,
+            "endMs": 12238,
+            "text": "直径わずか2376キロメートルの氷の小さな世界で、私たちの月よりも小さいのです。"
+          },
+          {
+            "startMs": 12238,
+            "endMs": 20038,
+            "text": "1930年に発見され、76年間にわたって9番目の惑星と呼ばれていました。"
+          },
+          {
+            "startMs": 20038,
+            "endMs": 33450,
+            "text": "しかし2006年、混み合ったカイパーベルトの中で自らの軌道からほかの天体を一掃していないことから、天文学者たちは冥王星を準惑星に分類し直しました。"
+          },
+          {
+            "startMs": 33450,
+            "endMs": 38312,
+            "text": "太陽を1周するのに約248年かかります。"
+          },
+          {
+            "startMs": 38312,
+            "endMs": 47550,
+            "text": "2015年にニュー・ホライズンズが近くを通過し、氷の山々と巨大なハート形の氷河を明らかにしました。"
           }
         ]
       }
@@ -796,6 +1261,53 @@
             "text": "Thanks for flying with me, and keep looking up!"
           }
         ]
+      },
+      "ja": {
+        "file": "audio/narration/outro.ja.mp3",
+        "durationMs": 38550,
+        "hash": "6d3a577b6fb0a465bb39dcbbb285b7980ed441e202203d6e75267e49b7659a7f",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2762,
+            "text": "これでツアーはおしまいです！"
+          },
+          {
+            "startMs": 2762,
+            "endMs": 10612,
+            "text": "燃えさかる太陽から凍てつく冥王星まで、私たちは60億キロメートル近くを旅してきました。"
+          },
+          {
+            "startMs": 10612,
+            "endMs": 15174,
+            "text": "ここからは、太陽系を自由に探検してください。"
+          },
+          {
+            "startMs": 15174,
+            "endMs": 20250,
+            "text": "惑星をタップするとそこまで飛んで情報パネルを読めます。"
+          },
+          {
+            "startMs": 20250,
+            "endMs": 25288,
+            "text": "ドラッグで周りを見渡し、ピンチで細部までズームできます。"
+          },
+          {
+            "startMs": 25288,
+            "endMs": 32600,
+            "text": "画面上部で言語を切り替えられ、ツアーボタンを押せばいつでもこの旅をもう一度楽しめます。"
+          },
+          {
+            "startMs": 32600,
+            "endMs": 35450,
+            "text": "一緒に飛んでくれてありがとう。"
+          },
+          {
+            "startMs": 35450,
+            "endMs": 38550,
+            "text": "これからも空を見上げてくださいね！"
+          }
+        ]
       }
     },
     "moon": {
@@ -855,6 +1367,43 @@
             "startMs": 21588,
             "endMs": 26238,
             "text": "Bất ngờ là Mặt Trăng đang xa dần, khoảng 3,8 xentimét mỗi năm."
+          }
+        ]
+      },
+      "ja": {
+        "file": "audio/narration/moon.ja.mp3",
+        "durationMs": 47637,
+        "hash": "19250139701357b35e72c7bb62442caa50e159aa90719f3af7e7e8c8a0d7bb44",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3062,
+            "text": "すぐおとなりにあるのが月です。"
+          },
+          {
+            "startMs": 3062,
+            "endMs": 9762,
+            "text": "地球の唯一の自然衛星で、距離は約38万4000キロメートルです。"
+          },
+          {
+            "startMs": 9762,
+            "endMs": 21600,
+            "text": "直径は3475キロメートルで、火星ほどの大きさの天体が若い地球に衝突したとき、飛び散った破片から生まれたと考えられています。"
+          },
+          {
+            "startMs": 21600,
+            "endMs": 32075,
+            "text": "月は27日ごとに1回自転し、これは地球を1周する時間とぴったり同じなので、いつも同じ面をこちらに向けています。"
+          },
+          {
+            "startMs": 32075,
+            "endMs": 40713,
+            "text": "1969年から1972年にかけて、12人の宇宙飛行士が月面を歩きました。"
+          },
+          {
+            "startMs": 40713,
+            "endMs": 47637,
+            "text": "意外なことに、月は毎年4センチメートル近くずつ、ゆっくりと遠ざかっています。"
           }
         ]
       }

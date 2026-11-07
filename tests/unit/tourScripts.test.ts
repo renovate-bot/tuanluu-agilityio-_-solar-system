@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { getContent } from '../../src/data/content';
 import { TOUR_STOPS } from '../../src/data/tour/stops';
 import en from '../../src/data/tour/en.json';
+import ja from '../../src/data/tour/ja.json';
 import vi from '../../src/data/tour/vi.json';
-import type { ContentId, Lang } from '../../src/data/types';
+import { SUPPORTED_LANGS, type ContentId, type Lang } from '../../src/data/types';
 
 const EXPECTED_IDS = [
   'intro',
@@ -23,16 +24,23 @@ const EXPECTED_IDS = [
 ];
 
 type Script = Record<string, { text: string }>;
-const SCRIPTS: Record<Lang, Script> = { vi, en };
-const WORD_LIMITS: Record<Lang, [number, number]> = { vi: [60, 110], en: [50, 100] };
-const LANGS: Lang[] = ['vi', 'en'];
+const SCRIPTS: Record<Lang, Script> = { vi, en, ja };
+// vi/en count whitespace-separated words; ja (written without spaces) counts
+// non-space characters, sized like the English 50-100 words (about 15-45 s of speech).
+const LENGTH_LIMITS: Record<Lang, [number, number]> = {
+  vi: [60, 110],
+  en: [50, 100],
+  ja: [110, 320],
+};
+const LANGS: readonly Lang[] = SUPPORTED_LANGS;
 
-function words(text: string): string[] {
-  return text.trim().split(/\s+/);
+function length(text: string, lang: Lang): number {
+  if (lang === 'ja') return text.replace(/\s/g, '').length;
+  return text.trim().split(/\s+/).length;
 }
 
 function sentences(text: string): string[] {
-  return text.match(/[^.!?]+[.!?]+/g) ?? [];
+  return text.match(/[^.!?。！？]+[.!?。！？]+/g) ?? [];
 }
 
 describe('TOUR_STOPS', () => {
@@ -51,30 +59,30 @@ describe('TOUR_STOPS', () => {
 
 describe.each(LANGS)('tour script (%s)', (lang) => {
   const script = SCRIPTS[lang];
-  const [min, max] = WORD_LIMITS[lang];
+  const [min, max] = LENGTH_LIMITS[lang];
 
   it('has exactly the 14 stop keys', () => {
     expect(Object.keys(script).sort()).toEqual([...EXPECTED_IDS].sort());
   });
 
-  it.each(EXPECTED_IDS)('%s has a non-empty text within the word limits', (id) => {
+  it.each(EXPECTED_IDS)('%s has a non-empty text within the length limits', (id) => {
     const text = script[id]?.text ?? '';
-    const count = words(text).length;
+    const count = length(text, lang);
     expect(count).toBeGreaterThanOrEqual(min);
     expect(count).toBeLessThanOrEqual(max);
   });
 
-  it.each(EXPECTED_IDS)('%s has at least 2 sentences and ends with . ! or ?', (id) => {
+  it.each(EXPECTED_IDS)('%s has at least 2 sentences and ends with a terminator', (id) => {
     const text = (script[id]?.text ?? '').trim();
     expect(sentences(text).length).toBeGreaterThanOrEqual(2);
-    expect(text).toMatch(/[.!?]$/);
+    expect(text).toMatch(lang === 'ja' ? /[。！？]$/ : /[.!?]$/);
   });
 
   it.each(EXPECTED_IDS)('%s is TTS-friendly (no markdown, emoji or unit symbols)', (id) => {
     const text = script[id]?.text ?? '';
     expect(text).not.toMatch(/[*_#`[\]<>|~]/);
     expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
-    expect(text).not.toMatch(/[°%²³₂&]/);
+    expect(text).not.toMatch(/[°%²³₂&％]/);
     expect(text).not.toMatch(/\n/);
   });
 
@@ -86,4 +94,12 @@ describe.each(LANGS)('tour script (%s)', (lang) => {
       expect(text.toLocaleLowerCase(lang)).toContain(name.toLocaleLowerCase(lang));
     },
   );
+});
+
+describe('Japanese tour script', () => {
+  it.each(EXPECTED_IDS)('%s uses Japanese sentence terminators, not ASCII ones', (id) => {
+    const text = (ja as Script)[id]?.text ?? '';
+    expect(text).not.toMatch(/[.!?](\s|$)/);
+    expect(text).toMatch(/[\p{Script=Hiragana}\p{Script=Katakana}]/u);
+  });
 });

@@ -23,6 +23,7 @@ import {
 import { createScaledTimers } from './tour/scaledTimers';
 import type { NarrationManifest } from './tour/narration';
 import tourScriptsEn from './data/tour/en.json';
+import tourScriptsJa from './data/tour/ja.json';
 import tourScriptsVi from './data/tour/vi.json';
 import { TOUR_STOPS } from './data/tour/stops';
 import {
@@ -49,6 +50,7 @@ import { createCameraRig } from './camera/cameraRig';
 import { createLoadingScreen, showBootError, showWebglUnsupported } from './ui/loadingScreen';
 import { createControlBar } from './ui/controlBar';
 import { createCredits } from './ui/credits';
+import { createLanguagePicker } from './ui/languagePicker';
 import { createInfoPanel } from './ui/infoPanel';
 import { createTourControls, isTourActive } from './ui/tourControls';
 import { createSubtitles } from './ui/subtitles';
@@ -148,12 +150,13 @@ async function boot(): Promise<void> {
     store.set({ muted });
   };
   const credits = createCredits(root, store);
+  // Only the language changes: selection, panel and tour state stay as they are.
+  const languagePicker = createLanguagePicker(root, store, (lang) => {
+    savePref(storage, 'lang', lang);
+    store.set({ lang });
+  });
   createControlBar(root, store, {
-    toggleLang() {
-      const lang = store.get().lang === 'vi' ? 'en' : 'vi';
-      savePref(storage, 'lang', lang);
-      store.set({ lang });
-    },
+    openLanguagePicker: () => languagePicker.open(),
     toggleMute: () => setMuted(!store.get().muted),
     toggleTour() {
       if (isTourActive(store.get().tour.status)) dispatchTour({ type: 'EXIT' });
@@ -381,7 +384,7 @@ async function boot(): Promise<void> {
     audio,
     store,
     manifest,
-    scripts: { vi: tourScriptsVi, en: tourScriptsEn },
+    scripts: { vi: tourScriptsVi, en: tourScriptsEn, ja: tourScriptsJa },
     timers: tourTimers,
     audioUrl: (file) => `${import.meta.env.BASE_URL}${file}`,
   });
