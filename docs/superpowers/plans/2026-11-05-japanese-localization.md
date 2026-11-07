@@ -145,8 +145,8 @@ This phase is one atomic task and PR. Do not expose Japanese until its UI, body 
   git commit -m "docs(t33): record progress" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
   ```
 
-- [ ] **Step 23: Push the feature branch and open a PR** with `gh pr create --base main`.
-- [ ] **Step 24: Wait for CI** with `gh pr checks <number> --watch --fail-fast`; do not merge while any required check fails.
-- [ ] **Step 25: Merge only after required checks pass**, using `gh pr merge <number> --merge --delete-branch`; remove the worktree and pull `main`.
+- [x] **Step 23: Push the feature branch and open a PR** with `gh pr create --base main`.
+- [x] **Step 24: Wait for CI** with `gh pr checks <number> --watch --fail-fast`; do not merge while any required check fails.
+- [x] **Step 25: Merge only after required checks pass**, using `gh pr merge <number> --merge --delete-branch`; remove the worktree and pull `main`.
 
 After this Japanese phase is complete, stop. Do not begin Korean, German, or Russian until the user reviews the Japanese result and explicitly requests the next phase.
