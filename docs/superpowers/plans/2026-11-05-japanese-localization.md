@@ -67,78 +67,78 @@ This phase is one atomic task and PR. Do not expose Japanese until its UI, body 
   - `ControlActions.openLanguagePicker(): void` in place of `toggleLang()`.
   - Three complete UI/content/tour tables and a 42-entry manifest.
 
-- [ ] **Step 1: Add failing preference tests** for saved `vi`, `en`, and `ja`; `ja-JP` matching; supported-language order; unsupported `ko`/`de` tags; invalid saved values; and English fallback.
-- [ ] **Step 2: Run the preference tests and confirm they fail** because locale detection and saved values currently support only Vietnamese and English.
+- [x] **Step 1: Add failing preference tests** for saved `vi`, `en`, and `ja`; `ja-JP` matching; supported-language order; unsupported `ko`/`de` tags; invalid saved values; and English fallback.
+- [x] **Step 2: Run the preference tests and confirm they fail** because locale detection and saved values currently support only Vietnamese and English.
 
   Run: `npm test -- tests/unit/prefs.test.ts`
   Expected: FAIL for Japanese detection/persistence and the revised supported-language ordering.
 
-- [ ] **Step 3: Add failing Japanese number-format tests** and six-key parity/completeness checks for `vi`, `en`, and `ja`, covering every UI key, placeholder, `ContentId`, and tour stop.
-- [ ] **Step 4: Run localization tests and confirm they fail** because the Japanese tables and `ja-JP` number locale do not exist yet.
+- [x] **Step 3: Add failing Japanese number-format tests** and six-key parity/completeness checks for `vi`, `en`, and `ja`, covering every UI key, placeholder, `ContentId`, and tour stop.
+- [x] **Step 4: Run localization tests and confirm they fail** because the Japanese tables and `ja-JP` number locale do not exist yet.
 
   Run: `npm test -- tests/unit/i18n.test.ts tests/unit/content.test.ts tests/unit/tourScripts.test.ts`
   Expected: FAIL for the missing Japanese locale data and formatting.
 
-- [ ] **Step 5: Implement the three-locale type, preference, formatting, and translation tables.** Use `SUPPORTED_LANGS = ['vi', 'en', 'ja']`; preserve valid saved locale; select the first currently supported browser locale; format with `ja-JP`; add non-empty Japanese strings, all body content, and all 14 tour scripts translated from English without changing factual claims.
-- [ ] **Step 6: Run locale/content/tour tests** and correct missing keys, placeholders, body names, Japanese sentence punctuation, and script validation until all pass.
+- [x] **Step 5: Implement the three-locale type, preference, formatting, and translation tables.** Use `SUPPORTED_LANGS = ['vi', 'en', 'ja']`; preserve valid saved locale; select the first currently supported browser locale; format with `ja-JP`; add non-empty Japanese strings, all body content, and all 14 tour scripts translated from English without changing factual claims.
+- [x] **Step 6: Run locale/content/tour tests** and correct missing keys, placeholders, body names, Japanese sentence punctuation, and script validation until all pass.
 
   Run: `npm test -- tests/unit/prefs.test.ts tests/unit/i18n.test.ts tests/unit/content.test.ts tests/unit/tourScripts.test.ts`
   Expected: PASS for `vi`, `en`, and `ja`.
 
-- [ ] **Step 7: Add failing TypeScript and Python tests** for Japanese sentence splitting (`。！？`), contiguous proportional cues, and realistic subtitle-only duration for Japanese text.
-- [ ] **Step 8: Run cue tests and confirm they fail** because fallback splitting recognizes only ASCII terminators and whitespace-delimited words.
+- [x] **Step 7: Add failing TypeScript and Python tests** for Japanese sentence splitting (`。！？`), contiguous proportional cues, and realistic subtitle-only duration for Japanese text.
+- [x] **Step 8: Run cue tests and confirm they fail** because fallback splitting recognizes only ASCII terminators and whitespace-delimited words.
 
   Run: `npm test -- tests/unit/narration.test.ts`; `python scripts/test_generate_narration.py`
   Expected: FAIL for Japanese sentence boundaries and duration.
 
-- [ ] **Step 9: Implement locale-aware narration fallback.** Pass `lang` into `estimateDurationMs`; use `Intl.Segmenter(lang, { granularity: 'word' })`; recognize `。`, `！`, and `？` in TypeScript proportional cues and Python fallback cues.
-- [ ] **Step 10: Run narration fallback tests** and confirm existing Vietnamese/English behavior remains unchanged and Japanese cues cover all sentences.
+- [x] **Step 9: Implement locale-aware narration fallback.** Pass `lang` into `estimateDurationMs`; use `Intl.Segmenter(lang, { granularity: 'word' })`; recognize `。`, `！`, and `？` in TypeScript proportional cues and Python fallback cues.
+- [x] **Step 10: Run narration fallback tests** and confirm existing Vietnamese/English behavior remains unchanged and Japanese cues cover all sentences.
 
   Run: `npm test -- tests/unit/narration.test.ts`; `python scripts/test_generate_narration.py`
   Expected: PASS.
 
-- [ ] **Step 11: Add failing generator tests** requiring Japanese source JSON and a locale-matched Edge TTS Neural voice while retaining current Vietnamese/English voice IDs.
-- [ ] **Step 12: Run generator tests and confirm they fail** because `VOICES` and source loading currently omit `ja`.
+- [x] **Step 11: Add failing generator tests** requiring Japanese source JSON and a locale-matched Edge TTS Neural voice while retaining current Vietnamese/English voice IDs.
+- [x] **Step 12: Run generator tests and confirm they fail** because `VOICES` and source loading currently omit `ja`.
 
   Run: `python scripts/test_generate_narration.py`
   Expected: FAIL for the missing Japanese voice/source.
 
-- [ ] **Step 13: Extend narration generation and create the Japanese audio assets.** Add one supported Japanese Neural voice; preserve hash-based reuse, retries, cues, and existing assets. Run the existing generator to create 14 Japanese MP3s and update the manifest.
+- [x] **Step 13: Extend narration generation and create the Japanese audio assets.** Add one supported Japanese Neural voice; preserve hash-based reuse, retries, cues, and existing assets. Run the existing generator to create 14 Japanese MP3s and update the manifest.
 
   Run: `npm run narration`
   Expected: Generate the Japanese clip for every one of the 14 stops without regenerating unchanged Vietnamese/English clips.
 
-- [ ] **Step 14: Strengthen narration asset tests** to assert all 14 stops × three locales exist, files exist, duration is 10–50 seconds, cues are contiguous and cover each segment, and all three voice entries are present.
+- [x] **Step 14: Strengthen narration asset tests** to assert all 14 stops × three locales exist, files exist, duration is 10–50 seconds, cues are contiguous and cover each segment, and all three voice entries are present.
 
   Run: `npm test -- tests/unit/narration.test.ts tests/unit/narrationAssets.test.ts tests/unit/tourController.test.ts`
   Expected: PASS with 42 stop/locale segments and no language mismatch.
 
-- [ ] **Step 15: Add failing language-picker unit and e2e tests** for three native-name labels, current locale indication, Japanese selection/persistence, close/Escape/backdrop, focus return, 44px targets, 320px/short viewport, and preserving an open body panel.
+- [x] **Step 15: Add failing language-picker unit and e2e tests** for three native-name labels, current locale indication, Japanese selection/persistence, close/Escape/backdrop, focus return, 44px targets, 320px/short viewport, and preserving an open body panel.
 
   Run: `npm test -- tests/unit/languagePicker.test.ts`; `npm run test:e2e -- tests/e2e/controls.spec.ts tests/e2e/panel.spec.ts`
   Expected: FAIL because the app still has a two-language toggle.
 
-- [ ] **Step 16: Implement the responsive language modal and wire app state.** Add a compact `文A` opener; show only `Tiếng Việt`, `English`, and `日本語`; identify the active locale; trap Tab focus; close on selection/Escape/backdrop/close button; return focus to opener. Save the choice, update `document.documentElement.lang` and all content, close the modal, and preserve panel/tour state. On mobile, use a bottom-aligned sheet that respects safe areas and long labels.
-- [ ] **Step 17: Run picker unit and targeted e2e tests** at 320px width and short mobile height; verify an open info panel remains selected and an active narration restarts at the same stop in Japanese.
+- [x] **Step 16: Implement the responsive language modal and wire app state.** Add a compact `文A` opener; show only `Tiếng Việt`, `English`, and `日本語`; identify the active locale; trap Tab focus; close on selection/Escape/backdrop/close button; return focus to opener. Save the choice, update `document.documentElement.lang` and all content, close the modal, and preserve panel/tour state. On mobile, use a bottom-aligned sheet that respects safe areas and long labels.
+- [x] **Step 17: Run picker unit and targeted e2e tests** at 320px width and short mobile height; verify an open info panel remains selected and an active narration restarts at the same stop in Japanese.
 
   Run: `npm test -- tests/unit/languagePicker.test.ts tests/unit/infoPanel.test.ts tests/unit/tourController.test.ts`; `npm run test:e2e -- tests/e2e/controls.spec.ts tests/e2e/panel.spec.ts`
   Expected: PASS; Japanese choice persists across reload and no mobile overflow or focus loss occurs.
 
-- [ ] **Step 18: Update project guidance.** Update `AGENTS.md` to the current supported locale set and verified voice IDs. Update `src/data/CLAUDE.md` so English is the canonical translation source and Japanese AI translation is identified as not natively proofread.
-- [ ] **Step 19: Run complete verification and inspect payload budgets.**
+- [x] **Step 18: Update project guidance.** Update `AGENTS.md` to the current supported locale set and verified voice IDs. Update `src/data/CLAUDE.md` so English is the canonical translation source and Japanese AI translation is identified as not natively proofread.
+- [x] **Step 19: Run complete verification and inspect payload budgets.**
 
   Run: `npm run lint`; `npm run typecheck`; `npm test`; `python scripts/test_generate_narration.py`; `npm run build`; `npm run check:budget`
   Expected: All commands pass; initial and JS gzip budgets stay within existing limits; builds do not fetch locale or audio services.
 
-- [ ] **Step 20: Commit the verified Japanese feature** with the approved spec and plan, using a Conventional Commit and required co-author trailer.
+- [x] **Step 20: Commit the verified Japanese feature** with the approved spec and plan, using a Conventional Commit and required co-author trailer.
 
   ```powershell
   git add src tests scripts public/audio/narration docs/superpowers/specs/2026-11-05-japanese-localization-design.md docs/superpowers/plans/2026-11-05-japanese-localization.md AGENTS.md src/data/CLAUDE.md
   git commit -m "feat(t33): add Japanese support" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
   ```
 
-- [ ] **Step 21: Request a fresh reviewer check** for spec compliance and code quality. Fix required issues (up to two rounds), rerunning affected tests and full verification after the final fix; make new commits rather than amending.
-- [ ] **Step 22: Record Task 33 progress** in `docs/progress/t33.md` with status, summary, verification commands/results, `DECISION:` lines, and reviewer outcome; tick completed steps in this plan.
+- [x] **Step 21: Request a fresh reviewer check** for spec compliance and code quality. Fix required issues (up to two rounds), rerunning affected tests and full verification after the final fix; make new commits rather than amending.
+- [x] **Step 22: Record Task 33 progress** in `docs/progress/t33.md` with status, summary, verification commands/results, `DECISION:` lines, and reviewer outcome; tick completed steps in this plan.
 
   ```powershell
   git add docs/progress/t33.md docs/superpowers/plans/2026-11-05-japanese-localization.md
