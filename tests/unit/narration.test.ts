@@ -164,3 +164,25 @@ describe('resolveSegment', () => {
     ]);
   });
 });
+
+describe('narration fallback portability', () => {
+  it('uses no regex lookbehind (unsupported before Safari 16.4, breaks the bundle parse)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync('src/tour/narration.ts', 'utf8');
+    expect(src).not.toMatch(/\(\?<[=!]/);
+  });
+
+  it('estimates duration without Intl.Segmenter (Firefox before 125)', () => {
+    const original = Object.getOwnPropertyDescriptor(Intl, 'Segmenter')!;
+    Reflect.deleteProperty(Intl, 'Segmenter'); // simulate an engine without it
+    try {
+      const words = Array.from({ length: 20 }, () => 'word').join(' ');
+      expect(estimateDurationMs(words, 'en')).toBe(8000);
+      const ja =
+        '太陽の光が地球に届くまで約8分かかります。つまり私たちが見ている太陽は、いつも8分前の姿なのです。';
+      expect(estimateDurationMs(ja, 'ja')).toBeGreaterThan(6000);
+    } finally {
+      Object.defineProperty(Intl, 'Segmenter', original);
+    }
+  });
+});

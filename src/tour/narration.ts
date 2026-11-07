@@ -35,18 +35,35 @@ export function cueAt(cues: Cue[], ms: number): Cue | null {
 /**
  * Subtitle-only duration estimate: 400 ms per word, at least 4000 ms. Words come from
  * `Intl.Segmenter` for the language, so Japanese (written without spaces) is counted
- * by dictionary words; punctuation is not a word.
+ * by dictionary words; punctuation is not a word. Engines without `Intl.Segmenter`
+ * (Firefox before 125) fall back to whitespace words, or for Japanese to letters and
+ * digits divided by JA_CHARS_PER_WORD.
  */
 export function estimateDurationMs(text: string, lang: Lang): number {
-  const segmenter = new Intl.Segmenter(lang, { granularity: 'word' });
-  let words = 0;
-  for (const s of segmenter.segment(text)) if (s.isWordLike) words++;
-  return Math.max(MIN_DURATION_MS, words * MS_PER_WORD);
+  return Math.max(MIN_DURATION_MS, countWords(text, lang) * MS_PER_WORD);
+}
+
+/** Letters and digits per Intl.Segmenter word, averaged over the Japanese tour scripts. */
+const JA_CHARS_PER_WORD = 1.8;
+
+function countWords(text: string, lang: Lang): number {
+  if (typeof Intl.Segmenter === 'function') {
+    let words = 0;
+    for (const s of new Intl.Segmenter(lang, { granularity: 'word' }).segment(text)) {
+      if (s.isWordLike) words++;
+    }
+    return words;
+  }
+  if (lang === 'ja') {
+    return Math.round((text.match(/[\p{L}\p{N}]/gu) ?? []).length / JA_CHARS_PER_WORD);
+  }
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
 // A sentence ends at a run of . ! ? or the Japanese 。！？. A '.' between two digits
-// (23.5) is a decimal point, not a terminator. Mirrors split_sentences() in Python.
-const SENTENCE_RE = /(?:[^.!?。！？]|(?<=\d)\.(?=\d))+(?:[.!?。！？]+|$)/g;
+// (23.5) is a decimal point, not a terminator. No lookbehind: Safari before 16.4 fails
+// to parse it, which would break the whole bundle. Mirrors split_sentences() in Python.
+const SENTENCE_RE = /(?:\d\.(?=\d)|[^.!?。！？])+(?:[.!?。！？]+|$)/g;
 
 function splitSentences(text: string): string[] {
   const parts = text.trim().match(SENTENCE_RE) ?? [];

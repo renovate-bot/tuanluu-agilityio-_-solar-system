@@ -203,3 +203,13 @@ describe('UI strings', () => {
     expect(UI_STRINGS.ja['credits.support']).toBe('Buy me a coffee');
   });
 });
+
+describe('Japanese content keeps the English facts', () => {
+  it('Sun: one of billions of stars (何十億), as in the English source', () => {
+    expect(CONTENT_JA.sun.facts[3]).toContain('何十億');
+  });
+  it('Earth: each day lengthens by a tiny fraction of one second per century', () => {
+    expect(CONTENT_JA.earth.facts[3]).toContain('1秒');
+    expect(CONTENT_JA.earth.facts[3]).not.toContain('秒数');
+  });
+});

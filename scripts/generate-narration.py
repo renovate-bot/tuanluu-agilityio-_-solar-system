@@ -33,7 +33,7 @@ def text_hash(text, voice):
 
 # A sentence ends at a run of . ! ? or the Japanese terminators; a '.' between two
 # digits (23.5) is a decimal point. Mirrors splitSentences() in src/tour/narration.ts.
-SENTENCE_RE = re.compile(r"(?:[^.!?。！？]|(?<=\d)\.(?=\d))+(?:[.!?。！？]+|$)")
+SENTENCE_RE = re.compile(r"(?:\d\.(?=\d)|[^.!?。！？])+(?:[.!?。！？]+|$)")
 
 
 def split_sentences(text):
