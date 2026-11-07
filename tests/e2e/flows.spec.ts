@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { BODY_IDS } from '../../src/data/types';
+import { BODY_IDS, SUPPORTED_LANGS, type Lang } from '../../src/data/types';
 import { getContent } from '../../src/data/content';
 
 type AppWindow = {
   __app: {
-    getState(): { ready: boolean; selected: string | null; view: string; lang: 'vi' | 'en' };
+    getState(): { ready: boolean; selected: string | null; view: string; lang: Lang };
     select(id: string): Promise<void>;
     setTimeScale(n: number): void;
     cameraTargetId(): string | null;
@@ -44,7 +44,7 @@ const state = (page: Page) =>
     return { selected: s.selected, view: s.view, lang: s.lang };
   });
 
-test('selecting each clickable body shows its panel title in both languages', async ({ page }) => {
+test('selecting each clickable body shows its panel title in every language', async ({ page }) => {
   // 11 flights plus language toggles on software GL.
   test.slow();
   test.setTimeout(240_000);
@@ -59,9 +59,10 @@ test('selecting each clickable body shows its panel title in both languages', as
     await expect.poll(async () => (await state(page)).selected, { timeout: POLL }).toBe(id);
     const lang = (await state(page)).lang;
     await expect(title).toHaveText(getContent(id, lang).name, { timeout: POLL });
-    // Flip the language: the open panel retitles. The next body starts in that language.
-    const other = lang === 'vi' ? 'en' : 'vi';
+    // Cycle the language: the open panel retitles. The next body starts in that language.
+    const other = SUPPORTED_LANGS[(SUPPORTED_LANGS.indexOf(lang) + 1) % SUPPORTED_LANGS.length]!;
     await page.getByTestId('lang').click();
+    await page.getByTestId(`lang-option-${other}`).click();
     await expect(title).toHaveText(getContent(id, other).name, { timeout: POLL });
   }
 });

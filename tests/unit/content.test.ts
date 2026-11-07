@@ -1,23 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { CONTENT_EN, CONTENT_VI, getContent } from '../../src/data/content';
-import { BODY_IDS, type ContentId, type Lang } from '../../src/data/types';
+import { CONTENT_EN, CONTENT_JA, CONTENT_VI, getContent } from '../../src/data/content';
+import { BODY_IDS, SUPPORTED_LANGS, type ContentId, type Lang } from '../../src/data/types';
 import { UI_STRINGS } from '../../src/i18n/strings';
 
 const CONTENT_IDS: ContentId[] = [...BODY_IDS, 'asteroid-belt'];
-const LANGS: Lang[] = ['vi', 'en'];
+const LANGS: readonly Lang[] = SUPPORTED_LANGS;
 
-/** Counts sentences: runs of text ending in . ! or ? followed by whitespace or end of string. */
+/**
+ * Counts sentences: runs of text ending in . ! or ? followed by whitespace, or ending in
+ * a Japanese terminator (no following space needed), or the end of the string.
+ */
 function countSentences(text: string): number {
   return text
     .trim()
-    .split(/(?<=[.!?])\s+/)
+    .split(/(?<=[.!?])\s+|(?<=[。！？])\s*/)
     .filter((s) => s.trim().length > 0).length;
 }
 
 describe('body content', () => {
-  it('has an entry for exactly every ContentId in both languages', () => {
+  it('has an entry for exactly every ContentId in every language', () => {
     expect(Object.keys(CONTENT_VI).sort()).toEqual([...CONTENT_IDS].sort());
     expect(Object.keys(CONTENT_EN).sort()).toEqual([...CONTENT_IDS].sort());
+    expect(Object.keys(CONTENT_JA).sort()).toEqual([...CONTENT_IDS].sort());
+  });
+
+  it('Japanese facts match the English fact count for every body', () => {
+    for (const id of CONTENT_IDS) {
+      expect(CONTENT_JA[id].facts.length, id).toBe(CONTENT_EN[id].facts.length);
+    }
   });
 
   for (const lang of LANGS) {
@@ -43,11 +53,13 @@ describe('body content', () => {
   it('getContent returns the table for the requested language', () => {
     expect(getContent('earth', 'vi')).toBe(CONTENT_VI.earth);
     expect(getContent('earth', 'en')).toBe(CONTENT_EN.earth);
+    expect(getContent('earth', 'ja')).toBe(CONTENT_JA.earth);
   });
 
   it('labels Pluto as a dwarf planet and explains the 2006 reclassification', () => {
     expect(getContent('pluto', 'vi').kindLabel.toLowerCase()).toContain('hành tinh lùn');
     expect(getContent('pluto', 'en').kindLabel.toLowerCase()).toContain('dwarf planet');
+    expect(getContent('pluto', 'ja').kindLabel).toContain('準惑星');
     for (const lang of LANGS) {
       const c = getContent('pluto', lang);
       const text = [c.description, ...c.facts].join(' ');
@@ -62,8 +74,8 @@ describe('body content', () => {
       const text = [c.description, ...c.facts].join(' ');
       expect(text).toMatch(/2[.,]2/);
       expect(text).toMatch(/3[.,]2/);
-      expect(text).toMatch(/AU|au|đơn vị thiên văn/);
-      expect(text).toContain('Ceres');
+      expect(text).toMatch(/AU|au|đơn vị thiên văn|天文単位/);
+      expect(text).toMatch(lang === 'ja' ? /ケレス/ : /Ceres/);
     }
     expect(
       [CONTENT_EN['asteroid-belt'].description, ...CONTENT_EN['asteroid-belt'].facts].join(' '),
@@ -71,6 +83,9 @@ describe('body content', () => {
     expect(
       [CONTENT_VI['asteroid-belt'].description, ...CONTENT_VI['asteroid-belt'].facts].join(' '),
     ).toMatch(/Mặt Trăng/);
+    expect(
+      [CONTENT_JA['asteroid-belt'].description, ...CONTENT_JA['asteroid-belt'].facts].join(' '),
+    ).toMatch(/月/);
   });
 });
 
@@ -118,8 +133,28 @@ describe('UI strings', () => {
     'lang.switch',
   ];
 
-  it('vi and en have the same key set', () => {
-    expect(Object.keys(UI_STRINGS.vi).sort()).toEqual(Object.keys(UI_STRINGS.en).sort());
+  it('every language has the same key set as en', () => {
+    for (const lang of LANGS) {
+      expect(Object.keys(UI_STRINGS[lang]).sort(), lang).toEqual(Object.keys(UI_STRINGS.en).sort());
+    }
+  });
+
+  it('every translation has the same {placeholders} as en', () => {
+    const placeholders = (v: string): string[] => (v.match(/\{\w+\}/g) ?? []).sort();
+    for (const lang of LANGS) {
+      for (const [key, value] of Object.entries(UI_STRINGS.en)) {
+        const translated = UI_STRINGS[lang][key as keyof typeof UI_STRINGS.en];
+        expect(placeholders(translated), `${lang}.${key}`).toEqual(placeholders(value));
+      }
+    }
+  });
+
+  it('Japanese strings are written in Japanese, except brand names and km', () => {
+    const SAME_AS_EN = new Set(['credits.support', 'unit.km']);
+    for (const [key, value] of Object.entries(UI_STRINGS.ja)) {
+      if (SAME_AS_EN.has(key)) continue;
+      expect(value, `ja.${key}`).toMatch(/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u);
+    }
   });
 
   it('contains every required key', () => {
@@ -137,7 +172,7 @@ describe('UI strings', () => {
     }
   });
 
-  it('tour.progress has {current} and {total} placeholders in both languages', () => {
+  it('tour.progress has {current} and {total} placeholders in every language', () => {
     for (const lang of LANGS) {
       expect(UI_STRINGS[lang]['tour.progress']).toContain('{current}');
       expect(UI_STRINGS[lang]['tour.progress']).toContain('{total}');
@@ -147,6 +182,7 @@ describe('UI strings', () => {
   it('notToScale is a not-to-scale disclaimer in both languages', () => {
     expect(UI_STRINGS.en.notToScale.toLowerCase()).toContain('not to scale');
     expect(UI_STRINGS.vi.notToScale.toLowerCase()).toContain('tỉ lệ');
+    expect(UI_STRINGS.ja.notToScale).toContain('縮尺');
   });
 
   it('credits carry the required attributions', () => {
@@ -164,5 +200,6 @@ describe('UI strings', () => {
   it('support call to action keeps its English label in both locales', () => {
     expect(UI_STRINGS.en['credits.support']).toBe('Buy me a coffee');
     expect(UI_STRINGS.vi['credits.support']).toBe('Buy me a coffee');
+    expect(UI_STRINGS.ja['credits.support']).toBe('Buy me a coffee');
   });
 });

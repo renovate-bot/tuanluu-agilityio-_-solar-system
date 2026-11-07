@@ -2,7 +2,7 @@ import type { Lang } from '../data/types';
 
 // UI strings. Keys are flat dotted strings ('tour.start'). The English table is
 // the source of the key set: add a key here first, then TypeScript requires the
-// same key in the Vietnamese table. Placeholders use {name} syntax.
+// same key in the Vietnamese and Japanese tables. Placeholders use {name} syntax.
 const EN = {
   appTitle: 'Solar System Explorer',
   hintDesktop: 'Click a body to fly to it · drag to orbit · scroll to zoom',
@@ -65,6 +65,8 @@ const EN = {
   'kind.moon': 'Moon',
 
   'lang.switch': 'Switch language',
+  'lang.title': 'Language',
+  'lang.close': 'Close',
 } as const;
 
 export type UiKey = keyof typeof EN;
@@ -131,9 +133,88 @@ const VI: Record<UiKey, string> = {
   'kind.moon': 'Vệ tinh',
 
   'lang.switch': 'Đổi ngôn ngữ',
+  'lang.title': 'Ngôn ngữ',
+  'lang.close': 'Đóng',
+};
+
+// Japanese: AI translation from the English table, not yet proofread by a native speaker.
+const JA: Record<UiKey, string> = {
+  appTitle: '太陽系エクスプローラー',
+  hintDesktop: '天体をクリックして移動 · ドラッグで回転 · スクロールでズーム',
+  hintMobile: '天体をタップして移動 · ドラッグで回転 · ピンチでズーム',
+  backToOverview: '全体表示に戻る',
+  notToScale: '大きさと距離は実際の縮尺ではありません',
+
+  'sound.on': 'サウンドをオン',
+  'sound.off': 'サウンドをオフ',
+
+  'tour.start': 'ツアー開始',
+  'tour.stop': 'ツアー停止',
+  'tour.pause': '一時停止',
+  'tour.resume': '再開',
+  'tour.next': '次へ',
+  'tour.prev': '前へ',
+  'tour.exit': 'ツアーを終了',
+  'tour.progress': '{total}か所中{current}か所目',
+  'tour.unmuteHint': 'サウンドをオンにするとナレーションが聞けます',
+
+  'credits.title': 'クレジット',
+  'credits.textures': 'テクスチャ: Solar System Scope (CC BY 4.0)',
+  'credits.data': 'データ: NASA Planetary Fact Sheet および NASA Science',
+  'credits.voice': 'ナレーション音声は Microsoft Edge TTS で生成',
+  'credits.support': 'Buy me a coffee',
+  'credits.close': '閉じる',
+
+  loading: '太陽系を読み込み中…',
+  'error.boot': 'アプリの起動中に問題が発生しました。ページを再読み込みしてください。',
+  webglUnsupported: 'お使いのブラウザまたは端末は、太陽系の表示に必要な WebGL に対応していません。',
+
+  'field.kind': '種類',
+  'field.order': '太陽からの順番',
+  'field.diameter': '直径',
+  'field.mass': '質量(地球 = 1)',
+  'field.distance': '太陽からの平均距離',
+  'field.orbitalPeriod': '公転周期',
+  'field.rotationPeriod': '自転周期',
+  'field.meanTemp': '平均気温',
+  'field.moons': '既知の衛星の数',
+  'field.gravity': '表面重力',
+
+  'field.distanceEarth': '地球からの平均距離',
+  'unit.km': 'km',
+  'unit.millionKm': '百万 km',
+  'unit.days': '日',
+  'unit.years': '年',
+  'unit.hours': '時間',
+  'unit.earthMass': '× 地球',
+  'unit.retrograde': '(逆行)',
+  'panel.order': '{kind} · 第{n}番',
+  'panel.facts': 'おもしろ豆知識',
+
+  'kind.star': '恒星',
+  'kind.terrestrial': '地球型惑星',
+  'kind.gas-giant': '巨大ガス惑星',
+  'kind.ice-giant': '巨大氷惑星',
+  'kind.dwarf-planet': '準惑星',
+  'kind.moon': '衛星',
+
+  'lang.switch': '言語を切り替え',
+  'lang.title': '言語',
+  'lang.close': '閉じる',
 };
 
 export const UI_STRINGS: Record<Lang, Record<UiKey, string>> = {
   vi: VI,
   en: EN,
+  ja: JA,
+};
+
+/**
+ * Each locale's own name, shown as-is in every UI language (a reader looks for the
+ * name of the language they read). Order follows SUPPORTED_LANGS.
+ */
+export const LANG_NATIVE_NAMES: Record<Lang, string> = {
+  vi: 'Tiếng Việt',
+  en: 'English',
+  ja: '日本語',
 };

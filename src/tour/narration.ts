@@ -32,14 +32,24 @@ export function cueAt(cues: Cue[], ms: number): Cue | null {
   return null;
 }
 
-/** Subtitle-only duration estimate: 400 ms per word, at least 4000 ms. */
-export function estimateDurationMs(text: string): number {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
+/**
+ * Subtitle-only duration estimate: 400 ms per word, at least 4000 ms. Words come from
+ * `Intl.Segmenter` for the language, so Japanese (written without spaces) is counted
+ * by dictionary words; punctuation is not a word.
+ */
+export function estimateDurationMs(text: string, lang: Lang): number {
+  const segmenter = new Intl.Segmenter(lang, { granularity: 'word' });
+  let words = 0;
+  for (const s of segmenter.segment(text)) if (s.isWordLike) words++;
   return Math.max(MIN_DURATION_MS, words * MS_PER_WORD);
 }
 
+// A sentence ends at a run of . ! ? or the Japanese 。！？. A '.' between two digits
+// (23.5) is a decimal point, not a terminator. Mirrors split_sentences() in Python.
+const SENTENCE_RE = /(?:[^.!?。！？]|(?<=\d)\.(?=\d))+(?:[.!?。！？]+|$)/g;
+
 function splitSentences(text: string): string[] {
-  const parts = text.trim().match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [];
+  const parts = text.trim().match(SENTENCE_RE) ?? [];
   return parts.map((p) => p.trim()).filter((p) => p.length > 0);
 }
 
@@ -77,7 +87,7 @@ export function resolveSegment(
   if (entry) {
     return { file: entry.file, durationMs: entry.durationMs, cues: entry.cues, audio: true };
   }
-  const durationMs = estimateDurationMs(scriptText);
+  const durationMs = estimateDurationMs(scriptText, lang);
   return {
     file: '',
     durationMs,

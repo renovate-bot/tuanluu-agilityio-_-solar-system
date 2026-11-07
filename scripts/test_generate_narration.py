@@ -39,6 +39,26 @@ class SplitSentences(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(gn.split_sentences("  "), [])
 
+    def test_splits_on_japanese_terminators(self):
+        self.assertEqual(
+            gn.split_sentences("土星には環があります。氷でできています！古いのでしょうか？"),
+            ["土星には環があります。", "氷でできています！", "古いのでしょうか？"],
+        )
+
+    def test_keeps_decimal_inside_japanese_sentence(self):
+        self.assertEqual(
+            gn.split_sentences("地軸は約23.5度傾いています。季節が生まれます。"),
+            ["地軸は約23.5度傾いています。", "季節が生まれます。"],
+        )
+
+    def test_japanese_fallback_cues_cover_every_sentence(self):
+        cues = gn.fallback_cues(gn.split_sentences("環があります。氷です！古い？"), 1400)
+        self.assertEqual([c["text"] for c in cues], ["環があります。", "氷です！", "古い？"])
+        self.assertEqual(cues[0]["startMs"], 0)
+        self.assertEqual(cues[-1]["endMs"], 1400)
+        for a, b in zip(cues, cues[1:]):
+            self.assertEqual(a["endMs"], b["startMs"])
+
 
 class FallbackCues(unittest.TestCase):
     def test_contiguous_and_covering(self):
@@ -86,6 +106,44 @@ class MakeContiguous(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual(gn.make_contiguous([], 500), [])
+
+
+class AlignCueText(unittest.TestCase):
+    def test_restores_source_punctuation_rewritten_by_the_service(self):
+        # Edge TTS returned "ウィリアム、ハーシェル" for the source "ウィリアム・ハーシェル".
+        cues = [
+            {"startMs": 0, "endMs": 100, "text": "寒いです。"},
+            {"startMs": 100, "endMs": 200, "text": "ウィリアム、ハーシェルです。"},
+        ]
+        out = gn.align_cue_text(cues, "寒いです。ウィリアム・ハーシェルです。")
+        self.assertEqual([c["text"] for c in out], ["寒いです。", "ウィリアム・ハーシェルです。"])
+        self.assertEqual([(c["startMs"], c["endMs"]) for c in out], [(0, 100), (100, 200)])
+
+    def test_keeps_source_spacing_inside_a_cue(self):
+        cues = [{"startMs": 0, "endMs": 1, "text": "Hi  there."}, {"startMs": 1, "endMs": 2, "text": "Bye."}]
+        out = gn.align_cue_text(cues, "Hi there. Bye.")
+        self.assertEqual([c["text"] for c in out], ["Hi there.", "Bye."])
+
+    def test_leaves_cues_alone_when_lengths_differ(self):
+        cues = [{"startMs": 0, "endMs": 1, "text": "Twenty three."}]
+        self.assertEqual(gn.align_cue_text(cues, "23."), cues)
+
+
+class Voices(unittest.TestCase):
+    def test_supported_locales_in_order(self):
+        self.assertEqual(list(gn.VOICES), ["vi", "en", "ja"])
+
+    def test_keeps_vietnamese_and_english_voices(self):
+        self.assertEqual(gn.VOICES["vi"], "vi-VN-HoaiMyNeural")
+        self.assertEqual(gn.VOICES["en"], "en-US-AvaNeural")
+
+    def test_japanese_voice_is_a_ja_jp_neural_voice(self):
+        self.assertRegex(gn.VOICES["ja"], r"^ja-JP-[A-Za-z]+Neural$")
+
+    def test_every_voice_has_a_tour_source(self):
+        for lang in gn.VOICES:
+            path = gn.TOUR_DIR / f"{lang}.json"
+            self.assertTrue(path.exists(), path)
 
 
 class NeedsRegen(unittest.TestCase):

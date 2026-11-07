@@ -1,4 +1,10 @@
-export type Lang = 'vi' | 'en';
+/** Locales shipped in this phase: UI, body content, tour script and narration are complete for each. */
+export const SUPPORTED_LANGS = ['vi', 'en', 'ja'] as const;
+export type Lang = (typeof SUPPORTED_LANGS)[number];
+
+export function isLang(value: unknown): value is Lang {
+  return typeof value === 'string' && (SUPPORTED_LANGS as readonly string[]).includes(value);
+}
 
 export const BODY_IDS = [
   'sun',

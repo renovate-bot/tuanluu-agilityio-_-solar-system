@@ -1,4 +1,4 @@
-import type { Lang } from '../data/types';
+import { isLang, type Lang } from '../data/types';
 
 export interface KeyValueStorage {
   getItem(k: string): string | null;
@@ -15,8 +15,16 @@ export const PREF_KEYS = {
   tourSeen: 'sse.tourSeen',
 } as const;
 
+/**
+ * First supported primary language in browser order (case-insensitive, region ignored:
+ * `ja-JP` -> `ja`), else English. Unsupported entries such as `ko` or `de` are skipped.
+ */
 export function detectLang(languages: readonly string[]): Lang {
-  return languages.some((l) => l.toLowerCase().startsWith('vi')) ? 'vi' : 'en';
+  for (const tag of languages) {
+    const primary = tag.toLowerCase().split(/[-_]/)[0];
+    if (isLang(primary)) return primary;
+  }
+  return 'en';
 }
 
 function read(storage: KeyValueStorage | null, key: string): string | null {
@@ -30,8 +38,7 @@ function read(storage: KeyValueStorage | null, key: string): string | null {
 
 export function loadPrefs(storage: KeyValueStorage | null, languages: readonly string[]): Prefs {
   const storedLang = read(storage, PREF_KEYS.lang);
-  const lang: Lang =
-    storedLang === 'vi' || storedLang === 'en' ? storedLang : detectLang(languages);
+  const lang: Lang = isLang(storedLang) ? storedLang : detectLang(languages);
   return {
     lang,
     muted: read(storage, PREF_KEYS.muted) !== 'false',

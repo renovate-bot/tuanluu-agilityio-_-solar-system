@@ -23,26 +23,92 @@ async function hintKey(page: Page): Promise<'hintMobile' | 'hintDesktop'> {
   return layout === 'mobile' ? 'hintMobile' : 'hintDesktop';
 }
 
-test('language toggle switches texts and persists across reload', async ({ page }) => {
+async function chooseLang(page: Page, lang: 'vi' | 'en' | 'ja'): Promise<void> {
+  if ((await page.evaluate(() => document.documentElement.lang)) === lang) return;
+  await page.getByTestId('lang').click();
+  await page.getByTestId(`lang-option-${lang}`).click();
+  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe(lang);
+}
+
+test('language picker switches to Japanese and persists across reload', async ({ page }) => {
   // Reload-based and close to the 60 s limit under load on software GL.
   test.slow();
   await open(page);
-  const initial = await page.evaluate(() => document.documentElement.lang);
-  const next = initial === 'vi' ? 'en' : 'vi';
   const key = await hintKey(page);
-  await expect(page.getByTestId('hint')).toHaveText(UI_STRINGS[initial as 'vi' | 'en'][key]);
+  const initial = (await page.evaluate(() => document.documentElement.lang)) as 'vi' | 'en';
   await page.getByTestId('lang').click();
-  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe(next);
-  await expect(page.getByTestId('hint')).toHaveText(UI_STRINGS[next as 'vi' | 'en'][key], {
-    timeout: 25_000,
-  });
-  await expect(page.getByTestId('not-to-scale')).toHaveText(
-    UI_STRINGS[next as 'vi' | 'en'].notToScale,
-  );
+  const picker = page.getByTestId('lang-picker').getByRole('dialog');
+  await expect(picker).toBeVisible({ timeout: 25_000 });
+  await expect(picker.getByRole('button')).toHaveText([
+    /Tiếng Việt/,
+    /English/,
+    /日本語/,
+    UI_STRINGS[initial]['lang.close'],
+  ]);
+  await page.getByTestId('lang-option-ja').click();
+  await expect(picker).toBeHidden();
+  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('ja');
+  await expect(page.getByTestId('hint')).toHaveText(UI_STRINGS.ja[key], { timeout: 25_000 });
+  await expect(page.getByTestId('not-to-scale')).toHaveText(UI_STRINGS.ja.notToScale);
+  await expect(page.getByTestId('lang')).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem('sse.lang'))).toBe('ja');
   await page.reload();
   await open(page);
-  expect(await page.evaluate(() => document.documentElement.lang)).toBe(next);
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe('ja');
+  await expect(page.getByTestId('title')).toHaveText(UI_STRINGS.ja.appTitle);
 });
+
+test('language picker closes with Escape and the backdrop and returns focus', async ({ page }) => {
+  await open(page);
+  const before = await page.evaluate(() => document.documentElement.lang);
+  const overlay = page.getByTestId('lang-picker');
+  await page.getByTestId('lang').click();
+  await expect(overlay).toBeVisible({ timeout: 25_000 });
+  await expect(page.getByTestId(`lang-option-${before}`)).toHaveAttribute('aria-current', 'true');
+  await page.keyboard.press('Escape');
+  await expect(overlay).toBeHidden();
+  await expect(page.getByTestId('lang')).toBeFocused();
+  await page.getByTestId('lang').click();
+  await expect(overlay).toBeVisible();
+  await overlay.click({ position: { x: 5, y: 5 } });
+  await expect(overlay).toBeHidden();
+  await expect(page.getByTestId('lang')).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe(before);
+});
+
+for (const vp of [
+  { name: '320px wide', width: 320, height: 568 },
+  { name: 'short landscape', width: 640, height: 320 },
+]) {
+  test(`language picker fits a ${vp.name} viewport with 44px targets`, async ({ page }) => {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    await open(page);
+    await page.getByTestId('lang').click();
+    const dialog = page.getByTestId('lang-picker').getByRole('dialog');
+    await expect(dialog).toBeVisible({ timeout: 25_000 });
+    const box = (await dialog.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(vp.width + 0.5);
+    expect(box.y + box.height).toBeLessThanOrEqual(vp.height + 0.5);
+    const noOverflowX = await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    );
+    expect(noOverflowX).toBe(true);
+    for (const id of ['lang-option-vi', 'lang-option-en', 'lang-option-ja', 'lang-close']) {
+      const target = page.getByTestId(id);
+      await target.scrollIntoViewIfNeeded();
+      const b = (await target.boundingBox())!;
+      expect(b.width, id).toBeGreaterThanOrEqual(44);
+      expect(b.height, id).toBeGreaterThanOrEqual(44);
+      expect(b.y, id).toBeGreaterThanOrEqual(0);
+      expect(b.y + b.height, id).toBeLessThanOrEqual(vp.height + 0.5);
+    }
+    await page.getByTestId('lang-option-ja').click();
+    await expect(dialog).toBeHidden();
+    await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('ja');
+  });
+}
 
 test('sound button toggles mute state', async ({ page }) => {
   await open(page);
@@ -65,10 +131,7 @@ test('credits modal shows a safe support link with an English label across langu
   test.slow();
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page);
-  if ((await page.evaluate(() => document.documentElement.lang)) !== 'en') {
-    await page.getByTestId('lang').click();
-  }
-  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('en');
+  await chooseLang(page, 'en');
   await page.getByTestId('credits').click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible({ timeout: 25_000 });
@@ -94,10 +157,7 @@ test('credits modal shows a safe support link with an English label across langu
   await dialog.getByTestId('credits-close').click();
   await expect(dialog).toBeHidden();
 
-  if ((await page.evaluate(() => document.documentElement.lang)) !== 'vi') {
-    await page.getByTestId('lang').click();
-  }
-  await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe('vi');
+  await chooseLang(page, 'vi');
   await page.getByTestId('credits').click();
   await expect(page.getByRole('link', { name: 'Buy me a coffee' })).toBeVisible();
   await page.getByRole('dialog').getByTestId('credits-close').click();
@@ -124,4 +184,30 @@ test('hint hides after the first selection', async ({ page }) => {
     );
   });
   await expect(page.getByTestId('hint')).toBeHidden({ timeout: 25_000 });
+});
+
+test('switching to Japanese during an unmuted narration replays the same stop in Japanese', async ({
+  page,
+}) => {
+  test.slow();
+  await open(page);
+  await chooseLang(page, 'en');
+  await page.getByTestId('sound').click();
+  await page.getByTestId('tour').click();
+  type TourWindow = { __app: { getState(): { tour: { status: string; index: number } } } };
+  const tourState = () =>
+    page.evaluate(() => (window as unknown as TourWindow).__app.getState().tour);
+  await expect.poll(async () => (await tourState()).status, { timeout: 40_000 }).toBe('narrating');
+  const { index } = await tourState();
+  const jaClip = page.waitForRequest(/audio\/narration\/[a-z-]+\.ja\.mp3/, { timeout: 25_000 });
+  await chooseLang(page, 'ja');
+  const request = await jaClip;
+  expect(request.url()).toContain(index === 0 ? 'intro.ja.mp3' : '.ja.mp3');
+  expect((await tourState()).index).toBe(index);
+  await expect(page.getByTestId('subtitles')).toHaveText(
+    /[\p{Script=Hiragana}\p{Script=Katakana}]/u,
+    {
+      timeout: 25_000,
+    },
+  );
 });
