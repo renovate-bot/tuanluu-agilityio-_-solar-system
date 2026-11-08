@@ -44,8 +44,8 @@ Symptom: `npm run test:perf` (headed, real GPU: Intel Arc iGPU via ANGLE D3D11, 
 Tried: forced `medium` (56.3 / 56.8); `high` with bloom scale 0.75 (overview 38.9 to 53.1); `high` with 4000 asteroids (overview 45.3 to 50.5). The run-to-run noise (about ±8 FPS on a shared, busy machine) is larger than any of these effects, so `src/quality/tiers.ts` was left unchanged (ADR 0005). The controller re-measure on a quieter machine still gave 47.2 (overview) / 42.2 (Saturn), and the runtime FPS monitor downgraded `high` to `medium` during the run, so the app recovers by itself. Re-confirmed as open in the Task 32 final review (`docs/FINAL_REVIEW.md`). The Task 35 re-measure on an idle machine (after the orbit ribbons) gave 60 / 60 FPS with `high` kept to the end; one good run within the noise band does not close the issue.
 Status: open (re-measure on an idle laptop; if it is confirmed, lower the `high` bloom scale to 0.75 first)
 
-## `flows` e2e "tapping Mars then immediately Jupiter" is flaky
+## `flows` e2e "tapping Mars then immediately Jupiter" is flaky (resolved)
 Task: 38 (found there, pre-existing)
 Symptom: the `flows` e2e test "tapping Mars then immediately Jupiter" fails locally on the `pixel7` project and is flaky on `iphone13`: `projectBody('mars')` returns null. It also fails at bffbeaa, before the German work, so it is not caused by Task 38.
-Tried: nothing yet (found during the Task 38 verification).
-Status: open
+Tried: the retry never left the focus view after a mis-pick (a tap landing on Mercury), so Mars stayed unprojectable. The test now returns to the overview before retrying; passed 4 of 4 runs each on `pixel7` and `iphone13` without Playwright retries.
+Status: resolved
