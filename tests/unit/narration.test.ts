@@ -46,6 +46,12 @@ describe('estimateDurationMs', () => {
     expect(estimateDurationMs('', 'ja')).toBe(4000);
   });
 
+  it('counts whole German words (umlauts and eszett do not split a word)', () => {
+    const words = Array.from({ length: 20 }, () => 'Größe').join(' ');
+    expect(estimateDurationMs(words, 'de')).toBe(8000);
+    expect(estimateDurationMs('über Äpfel Füße Maß', 'de')).toBe(4000);
+  });
+
   it('keeps the Vietnamese count (one syllable per space-separated word)', () => {
     const text = Array.from({ length: 15 }, () => 'sao').join(' ');
     expect(estimateDurationMs(text, 'vi')).toBe(6000);
@@ -85,6 +91,17 @@ describe('resolveSegment', () => {
       },
     } as NarrationManifest['segments'],
   };
+
+  it('splits German text into 2 cues and keeps 4,6 intact', () => {
+    const seg = resolveSegment(
+      null,
+      'earth',
+      'de',
+      'Erster Satz. Zweiter Satz mit 4,6 Milliarden Jahren.',
+    );
+    expect(seg.cues).toHaveLength(2);
+    expect(seg.cues[1]?.text).toContain('4,6');
+  });
 
   it('returns the manifest segment with audio:true when present', () => {
     const seg = resolveSegment(MANIFEST, 'saturn', 'vi', TEXT);

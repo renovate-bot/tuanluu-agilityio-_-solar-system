@@ -3,7 +3,8 @@
   "voices": {
     "vi": "vi-VN-HoaiMyNeural",
     "en": "en-US-AvaNeural",
-    "ja": "ja-JP-NanamiNeural"
+    "ja": "ja-JP-NanamiNeural",
+    "de": "de-DE-KatjaNeural"
   },
   "segments": {
     "intro": {
@@ -137,6 +138,48 @@
             "text": "さあ、出発しましょう！"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/intro.de.mp3",
+        "durationMs": 34613,
+        "hash": "63a10c33ed3ad2f76de37a4d255e2c37274443a9b83cd5d8a532403c5fee58ac",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 3175,
+            "text": "Willkommen beim Sonnensystem-Entdecker!"
+          },
+          {
+            "startMs": 3175,
+            "endMs": 9287,
+            "text": "Ich bin dein Guide auf einer Reise von unserem glühenden Stern bis zum eisigen Rand der Planeten."
+          },
+          {
+            "startMs": 9287,
+            "endMs": 19938,
+            "text": "Unterwegs kannst du ziehen, um dich umzusehen, zwei Finger zusammenziehen oder scrollen, um zu zoomen, und auf jede Welt tippen, um direkt hinzufliegen."
+          },
+          {
+            "startMs": 19938,
+            "endMs": 25826,
+            "text": "Wenn du die Szene berührst, hält die Tour an, und du kannst jederzeit weitermachen."
+          },
+          {
+            "startMs": 25826,
+            "endMs": 31525,
+            "text": "Noch ein kurzer Hinweis: Größen und Entfernungen sind hier nicht maßstabsgetreu."
+          },
+          {
+            "startMs": 31525,
+            "endMs": 32925,
+            "text": "Bereit?"
+          },
+          {
+            "startMs": 32925,
+            "endMs": 34613,
+            "text": "Los geht's!"
+          }
+        ]
       }
     },
     "sun": {
@@ -228,6 +271,33 @@
             "startMs": 33437,
             "endMs": 39326,
             "text": "つまり私たちが見ている太陽は、いつも8分前の姿なのです。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/sun.de.mp3",
+        "durationMs": 33213,
+        "hash": "d090becc5ea8947f0deab0804f69c4ca67f28e58d80db759b3d156ed10af374d",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4088,
+            "text": "Das ist die Sonne, der Stern im Zentrum von allem."
+          },
+          {
+            "startMs": 4088,
+            "endMs": 12450,
+            "text": "Sie misst etwa eins Komma vier Millionen Kilometer im Durchmesser, und rund eine Komma drei Millionen Erden würden in sie hineinpassen."
+          },
+          {
+            "startMs": 12450,
+            "endMs": 23988,
+            "text": "Tief im Kern verschmilzt Wasserstoff bei etwa 15 Millionen Grad Celsius zu Helium, während die leuchtende Oberfläche mit 5.500 Grad vergleichsweise kühl ist."
+          },
+          {
+            "startMs": 23988,
+            "endMs": 33213,
+            "text": "Und jetzt die Überraschung: Sonnenlicht braucht etwa acht Minuten bis zur Erde, du siehst die Sonne also immer so, wie sie vor acht Minuten war."
           }
         ]
       }
@@ -323,6 +393,33 @@
             "text": "これは水星の2年分にあたります。"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/mercury.de.mp3",
+        "durationMs": 39638,
+        "hash": "a003b917ed1a6f5f73c4a102712bcaa90d2528b280423e1997099c37e38e3d93",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 8738,
+            "text": "Als Nächstes kommt der Merkur, der kleinste Planet und der sonnennächste, nur etwa 58 Millionen Kilometer entfernt."
+          },
+          {
+            "startMs": 8738,
+            "endMs": 19426,
+            "text": "Er ist gerade einmal 4.879 Kilometer breit, kaum größer als unser Mond, und umrundet die Sonne in nur 88 Erdentagen."
+          },
+          {
+            "startMs": 19426,
+            "endMs": 29837,
+            "text": "Da fast keine Luft die Wärme hält, steigen die Temperaturen am Tag auf rund 430 Grad Celsius und fallen nachts auf minus 180 Grad."
+          },
+          {
+            "startMs": 29837,
+            "endMs": 39638,
+            "text": "Und jetzt kommt ein Kniff: Von einem Sonnenaufgang zum nächsten vergehen auf dem Merkur 176 Erdentage, also volle zwei Merkurjahre."
+          }
+        ]
       }
     },
     "venus": {
@@ -409,6 +506,33 @@
             "startMs": 32200,
             "endMs": 40662,
             "text": "そして金星の1日、地球の243日は、225日の1年よりも長いのです。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/venus.de.mp3",
+        "durationMs": 39038,
+        "hash": "98288b3179c756a77601eabf8679a531c45ca5e5b8ef8254915079a8f6a2f50e",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 7488,
+            "text": "Jetzt erreichen wir die Venus, fast ein Zwilling der Erde mit 12.104 Kilometern Durchmesser."
+          },
+          {
+            "startMs": 7488,
+            "endMs": 10176,
+            "text": "Aber pack lieber nicht deine Koffer."
+          },
+          {
+            "startMs": 10176,
+            "endMs": 25950,
+            "text": "Dichte Kohlendioxidluft und Wolken aus Schwefelsäure halten die Wärme in einem außer Kontrolle geratenen Treibhauseffekt fest, sodass es an der Oberfläche etwa 465 Grad Celsius heiß wird, genug, um Blei zu schmelzen."
+          },
+          {
+            "startMs": 25950,
+            "endMs": 39038,
+            "text": "Noch seltsamer: Die Venus dreht sich rückwärts, die Sonne geht dort im Westen auf, und ein einziger Tag dauert mit 243 Erdentagen länger als ihr Jahr mit 225 Tagen."
           }
         ]
       }
@@ -519,6 +643,38 @@
             "text": "地球は太陽系の惑星の中で、ギリシャやローマの神の名前が付いていない唯一の惑星なのです。"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/earth.de.mp3",
+        "durationMs": 37976,
+        "hash": "9531d25307080fed60c645b464e8e7d964952c09fe51c5cb648c66cc5249cd9f",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2325,
+            "text": "Willkommen zu Hause!"
+          },
+          {
+            "startMs": 2325,
+            "endMs": 11925,
+            "text": "Das ist die Erde, 12.756 Kilometer breit und rund 150 Millionen Kilometer von der Sonne entfernt."
+          },
+          {
+            "startMs": 11925,
+            "endMs": 22000,
+            "text": "Sie ist die einzige Welt, auf der wir Leben kennen, und die einzige mit flüssigem Wasser an der Oberfläche, das etwa 70 Prozent des Planeten bedeckt."
+          },
+          {
+            "startMs": 22000,
+            "endMs": 29288,
+            "text": "Ihre Achse ist um gut 23 Grad geneigt, und genau diese Neigung beschert uns die Jahreszeiten."
+          },
+          {
+            "startMs": 29288,
+            "endMs": 37976,
+            "text": "Übrigens: Die Erde ist der einzige Planet in unserem System, der nicht nach einem griechischen oder römischen Gott benannt ist."
+          }
+        ]
       }
     },
     "mars": {
@@ -605,6 +761,33 @@
             "startMs": 31950,
             "endMs": 40000,
             "text": "火星には太陽系最大の火山、オリンポス山もあり、その高さはエベレストの約3倍です。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/mars.de.mp3",
+        "durationMs": 40075,
+        "hash": "198991245e871f6dbd1fd20be873b8f30c20464d1af3a97ec8b7cb28dbe70d7c",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 7900,
+            "text": "Hier ist der Mars, der Rote Planet, etwa 228 Millionen Kilometer von der Sonne entfernt."
+          },
+          {
+            "startMs": 7900,
+            "endMs": 18650,
+            "text": "Seine rostrote Farbe stammt von Eisenmineralen im Staub, und mit 6.792 Kilometern Durchmesser ist er ungefähr halb so groß wie die Erde."
+          },
+          {
+            "startMs": 18650,
+            "endMs": 31675,
+            "text": "Ein Tag dauert hier gut 24 Stunden und eine halbe, ein Jahr dagegen 687 Erdentage, und die Durchschnittstemperatur liegt bei frostigen minus 65 Grad Celsius."
+          },
+          {
+            "startMs": 31675,
+            "endMs": 40075,
+            "text": "Auf dem Mars steht auch der Olympus Mons, der größte Vulkan des Sonnensystems, etwa dreimal so hoch wie der Mount Everest."
           }
         ]
       }
@@ -703,6 +886,38 @@
             "startMs": 29987,
             "endMs": 38938,
             "text": "そして映画とは違い、小惑星帯はほとんどが何もない空間なので、探査機はそのまま通り抜けていきます。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/asteroid-belt.de.mp3",
+        "durationMs": 34587,
+        "hash": "d87bf6620913b30f74b789f62db8439411e84729fde02ceaf901d58cceac8d25",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 8038,
+            "text": "Zwischen Mars und Jupiter liegt der Asteroidengürtel, ein breiter Ring aus felsigen Überbleibseln der Planetenentstehung."
+          },
+          {
+            "startMs": 8038,
+            "endMs": 17050,
+            "text": "Forscher schätzen, dass er zwischen eins Komma eins und eins Komma neun Millionen Asteroiden mit mehr als einem Kilometer Durchmesser enthält."
+          },
+          {
+            "startMs": 17050,
+            "endMs": 22725,
+            "text": "Jupiters gewaltige Schwerkraft hat verhindert, dass daraus je ein Planet wurde."
+          },
+          {
+            "startMs": 22725,
+            "endMs": 26913,
+            "text": "Trotzdem wiegen sie alle zusammen weniger als unser Mond."
+          },
+          {
+            "startMs": 26913,
+            "endMs": 34587,
+            "text": "Und anders als im Film besteht der Gürtel fast nur aus leerem Raum, deshalb fliegen Raumsonden einfach hindurch."
           }
         ]
       }
@@ -808,6 +1023,38 @@
             "text": "木星には115個の衛星が知られており、その中には最大の衛星ガニメデも含まれています。"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/jupiter.de.mp3",
+        "durationMs": 36400,
+        "hash": "123b05dbf8e424fd9a4f1b580c90065ee47667a46f516308e1d45f5ff81f8a8e",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4475,
+            "text": "Sag Hallo zu Jupiter, dem Riesen des Sonnensystems."
+          },
+          {
+            "startMs": 4475,
+            "endMs": 15850,
+            "text": "Er ist fast 143.000 Kilometer breit, rund 1.000 Erden würden hineinpassen, und er hat mehr als doppelt so viel Masse wie alle anderen Planeten zusammen."
+          },
+          {
+            "startMs": 15850,
+            "endMs": 22425,
+            "text": "Trotzdem dreht er sich schneller als jeder andere Planet, ein Tag dauert nur etwa zehn Stunden."
+          },
+          {
+            "startMs": 22425,
+            "endMs": 29675,
+            "text": "Sein Großer Roter Fleck ist ein Sturm, breiter als die Erde, der seit mehr als 300 Jahren tobt."
+          },
+          {
+            "startMs": 29675,
+            "endMs": 36400,
+            "text": "Jupiter hat 115 bekannte Monde, darunter Ganymed, den größten Mond überhaupt."
+          }
+        ]
       }
     },
     "saturn": {
@@ -899,6 +1146,38 @@
             "startMs": 30750,
             "endMs": 37488,
             "text": "土星は水よりも密度が低いので、十分に大きなお風呂があれば浮かんでしまうのです！"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/saturn.de.mp3",
+        "durationMs": 34650,
+        "hash": "41cb132994769f9649c40938d3d5f837b066dabba3e67cc687ff238deb62dc5a",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 4288,
+            "text": "Und hier ist Saturn, das Juwel des Sonnensystems."
+          },
+          {
+            "startMs": 4288,
+            "endMs": 15613,
+            "text": "Seine strahlenden Ringe bestehen aus Milliarden von Eis- und Gesteinsbrocken und erstrecken sich über Hunderttausende Kilometer, sind aber an vielen Stellen nur etwa zehn Meter dick."
+          },
+          {
+            "startMs": 15613,
+            "endMs": 26074,
+            "text": "Saturn ist rund 120.000 Kilometer breit und hat 293 bekannte Monde, darunter Titan mit seinen Seen aus flüssigem Methan."
+          },
+          {
+            "startMs": 26074,
+            "endMs": 28000,
+            "text": "Das Verblüffendste?"
+          },
+          {
+            "startMs": 28000,
+            "endMs": 34650,
+            "text": "Saturn ist weniger dicht als Wasser, in einer ausreichend großen Badewanne würde er also schwimmen!"
           }
         ]
       }
@@ -999,6 +1278,38 @@
             "text": "天王星は、1781年にウィリアム・ハーシェルが望遠鏡で発見した最初の惑星でもあります。"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/uranus.de.mp3",
+        "durationMs": 39987,
+        "hash": "c99fab30d9b7e6fcece86ddc730ec0e823fe3566994eacd4bf70f459cd8f0333",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 7750,
+            "text": "Draußen in der Kälte finden wir Uranus, einen Eisriesen von etwa 51.000 Kilometern Durchmesser."
+          },
+          {
+            "startMs": 7750,
+            "endMs": 12000,
+            "text": "Methan in seiner Luft gibt ihm die sanfte blaugrüne Farbe."
+          },
+          {
+            "startMs": 12000,
+            "endMs": 20500,
+            "text": "Am merkwürdigsten ist seine Neigung: Uranus ist um etwa 98 Grad umgekippt und rollt deshalb auf der Seite um die Sonne."
+          },
+          {
+            "startMs": 20500,
+            "endMs": 31775,
+            "text": "Ein Umlauf dauert rund 84 Jahre, das heißt, jeder Pol bekommt etwa 21 Jahre ununterbrochenes Sonnenlicht und danach 21 Jahre Dunkelheit."
+          },
+          {
+            "startMs": 31775,
+            "endMs": 39987,
+            "text": "Uranus war außerdem 1781 der erste Planet, den William Herschel mit einem Teleskop entdeckte."
+          }
+        ]
       }
     },
     "neptune": {
@@ -1092,6 +1403,33 @@
             "text": "天文学者たちは天王星を引っ張る様子からその位置を予測し、ヨハン・ガレが1846年、探し始めたまさに最初の夜に見つけました。"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/neptune.de.mp3",
+        "durationMs": 37075,
+        "hash": "00dec5dadb4c35abf8e516279f3958a5ab5914c30eccaa471de27b36096be9a0",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 8550,
+            "text": "Als Nächstes folgt Neptun, der entfernteste große Planet, etwa viereinhalb Milliarden Kilometer von der Sonne entfernt."
+          },
+          {
+            "startMs": 8550,
+            "endMs": 16962,
+            "text": "Diese tiefblaue Welt wird von den schnellsten Winden des Sonnensystems gepeitscht, mit mehr als 2.000 Kilometern pro Stunde."
+          },
+          {
+            "startMs": 16962,
+            "endMs": 21900,
+            "text": "Ein Umlauf um die Sonne dauert etwa 165 Erdjahre."
+          },
+          {
+            "startMs": 21900,
+            "endMs": 37075,
+            "text": "Neptun war der erste Planet, der mit Mathematik gefunden wurde: Astronomen berechneten seinen Ort aus der Art, wie er an Uranus zog, und Johann Galle entdeckte ihn 1846 gleich in der ersten Nacht seiner Suche."
+          }
+        ]
       }
     },
     "pluto": {
@@ -1183,6 +1521,38 @@
             "startMs": 38312,
             "endMs": 47550,
             "text": "2015年にニュー・ホライズンズが近くを通過し、氷の山々と巨大なハート形の氷河を明らかにしました。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/pluto.de.mp3",
+        "durationMs": 39325,
+        "hash": "e85c437fbcb2a2d423db12ae66229a8eeaf619b2a6fd1e4587ba020a2300ef24",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 10200,
+            "text": "Unsere letzte Station ist Pluto, eine kleine Eiswelt mit nur 2.376 Kilometern Durchmesser, kleiner als unser Mond."
+          },
+          {
+            "startMs": 10200,
+            "endMs": 16575,
+            "text": "Er wurde 1930 entdeckt und galt 76 Jahre lang als neunter Planet."
+          },
+          {
+            "startMs": 16575,
+            "endMs": 26537,
+            "text": "Dann stuften ihn Astronomen 2006 zum Zwergplaneten herab, weil er seine Umlaufbahn im dicht besiedelten Kuipergürtel nicht freigeräumt hat."
+          },
+          {
+            "startMs": 26537,
+            "endMs": 31300,
+            "text": "Ein Umlauf um die Sonne dauert etwa 248 Jahre."
+          },
+          {
+            "startMs": 31300,
+            "endMs": 39325,
+            "text": "Als New Horizons 2015 vorbeiflog, zeigte sie vereiste Berge und einen riesigen herzförmigen Gletscher."
           }
         ]
       }
@@ -1308,6 +1678,43 @@
             "text": "これからも空を見上げてくださいね！"
           }
         ]
+      },
+      "de": {
+        "file": "audio/narration/outro.de.mp3",
+        "durationMs": 32950,
+        "hash": "24b715c6d19d7799058343afeece2af9a861141bec909a7aef86209edad7a2ce",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 2938,
+            "text": "Damit ist unsere Tour zu Ende!"
+          },
+          {
+            "startMs": 2938,
+            "endMs": 9676,
+            "text": "Von der glühenden Sonne bis zum gefrorenen Pluto haben wir fast sechs Milliarden Kilometer zurückgelegt."
+          },
+          {
+            "startMs": 9676,
+            "endMs": 12600,
+            "text": "Jetzt gehört das Sonnensystem dir."
+          },
+          {
+            "startMs": 12600,
+            "endMs": 21338,
+            "text": "Tippe auf einen Planeten, um hinzufliegen und das Infofeld zu lesen, ziehe, um dich umzusehen, und zoome für die Details."
+          },
+          {
+            "startMs": 21338,
+            "endMs": 29038,
+            "text": "Oben kannst du die Sprache wechseln, und mit der Tour-Taste startest du die Reise, wann immer du willst, noch einmal."
+          },
+          {
+            "startMs": 29038,
+            "endMs": 32950,
+            "text": "Danke fürs Mitfliegen, und schau weiter nach oben!"
+          }
+        ]
       }
     },
     "moon": {
@@ -1404,6 +1811,38 @@
             "startMs": 40713,
             "endMs": 47637,
             "text": "意外なことに、月は毎年4センチメートル近くずつ、ゆっくりと遠ざかっています。"
+          }
+        ]
+      },
+      "de": {
+        "file": "audio/narration/moon.de.mp3",
+        "durationMs": 44788,
+        "hash": "f726819f347650406895e0bbe600028ed1600c75c592f1fcd7f69e94164ef0e4",
+        "cues": [
+          {
+            "startMs": 0,
+            "endMs": 9100,
+            "text": "Gleich nebenan liegt der Mond, der einzige natürliche Satellit der Erde, etwa 384.000 Kilometer entfernt."
+          },
+          {
+            "startMs": 9100,
+            "endMs": 20688,
+            "text": "Er ist 3.475 Kilometer breit und entstand wahrscheinlich aus Trümmern, die herausgeschleudert wurden, als ein marsgroßer Körper auf die junge Erde prallte."
+          },
+          {
+            "startMs": 20688,
+            "endMs": 31538,
+            "text": "Der Mond dreht sich in 27 Tagen einmal um sich selbst, genauso lange, wie er für einen Umlauf um uns braucht, deshalb zeigt er uns immer dieselbe Seite."
+          },
+          {
+            "startMs": 31538,
+            "endMs": 38538,
+            "text": "Zwölf Astronauten haben ihn zwischen 1969 und 1972 betreten."
+          },
+          {
+            "startMs": 38538,
+            "endMs": 44788,
+            "text": "Erstaunlich: Er entfernt sich langsam von uns, jedes Jahr um fast vier Zentimeter."
           }
         ]
       }

@@ -26,9 +26,7 @@ const STOP_IDS = [
   'pluto',
   'outro',
 ];
-// German narration clips arrive in the next task; Task 2 removes this constant.
-const LANGS_WITHOUT_AUDIO_YET: readonly Lang[] = ['de'];
-const LANGS: readonly Lang[] = SUPPORTED_LANGS.filter((l) => !LANGS_WITHOUT_AUDIO_YET.includes(l));
+const LANGS: readonly Lang[] = SUPPORTED_LANGS;
 const SCRIPTS: Record<Lang, Record<string, { text: string }>> = { vi, en, ja, de };
 const VOICE_PREFIX: Record<Lang, string> = {
   vi: 'vi-VN-',
@@ -52,7 +50,7 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
     }
   });
 
-  it('has 42 stop/language segments, each file named for its stop and language', () => {
+  it('has 56 stop/language segments, each file named for its stop and language', () => {
     let count = 0;
     for (const id of STOP_IDS) {
       for (const lang of LANGS) {
@@ -63,7 +61,7 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
       }
     }
     expect(count).toBe(STOP_IDS.length * LANGS.length);
-    expect(count).toBe(42);
+    expect(count).toBe(56);
   });
 
   it('cues spell out exactly the tour script of the same language', () => {
@@ -75,6 +73,18 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
         const spoken = squash(seg.cues.map((c) => c.text).join(''));
         expect(spoken, `${id}.${lang}`).toBe(squash(SCRIPTS[lang][id]?.text ?? ''));
       }
+    }
+  });
+
+  it('German cue text equals the de.json text, whitespace-normalized', () => {
+    const norm = (s: string): string => s.replace(/\s+/g, ' ').trim();
+    for (const id of STOP_IDS) {
+      const seg = manifest.segments[id as keyof typeof manifest.segments]?.de;
+      expect(seg, id).toBeDefined();
+      if (!seg) continue;
+      expect(norm(seg.cues.map((c) => c.text).join(' ')), id).toBe(
+        norm(de[id as keyof typeof de]?.text ?? ''),
+      );
     }
   });
 

@@ -131,7 +131,7 @@ class AlignCueText(unittest.TestCase):
 
 class Voices(unittest.TestCase):
     def test_supported_locales_in_order(self):
-        self.assertEqual(list(gn.VOICES), ["vi", "en", "ja"])
+        self.assertEqual(list(gn.VOICES), ["vi", "en", "ja", "de"])
 
     def test_keeps_vietnamese_and_english_voices(self):
         self.assertEqual(gn.VOICES["vi"], "vi-VN-HoaiMyNeural")
@@ -139,6 +139,9 @@ class Voices(unittest.TestCase):
 
     def test_japanese_voice_is_a_ja_jp_neural_voice(self):
         self.assertRegex(gn.VOICES["ja"], r"^ja-JP-[A-Za-z]+Neural$")
+
+    def test_german_voice_is_a_de_de_neural_voice(self):
+        self.assertRegex(gn.VOICES["de"], r"^de-DE-[A-Za-z]+Neural$")
 
     def test_every_voice_has_a_tour_source(self):
         for lang in gn.VOICES:
