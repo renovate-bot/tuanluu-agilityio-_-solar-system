@@ -287,6 +287,33 @@ describe('tour controller (audio)', () => {
     expect(t.rig.flyTo).toHaveBeenCalledTimes(1); // no new flight: same stop
   });
 
+  it('switching to German mid-stop replays the same stop with the de clip and cues', async () => {
+    const manifest = manifestFor(10_000);
+    for (const stop of TOUR_STOPS) {
+      manifest.segments[stop.id].de = {
+        file: `audio/narration/${stop.id}.de.mp3`,
+        durationMs: 12_000,
+        cues: [{ startMs: 0, endMs: 12_000, text: `${stop.id} Deutsch.` }],
+      };
+    }
+    const t = setup({ muted: false, manifest });
+    t.tour.dispatch({ type: 'START' });
+    t.flights[0]!.done.resolve();
+    await flush();
+    t.plays[0]!.done.resolve('ended');
+    await vi.advanceTimersByTimeAsync(TOUR_GAP_MS);
+    t.flights[1]!.done.resolve(); // second stop: the Sun
+    await flush();
+    expect(t.store.get().tour).toMatchObject({ status: 'narrating', index: 1 });
+    expect(t.audio.playNarration).toHaveBeenLastCalledWith('audio/narration/sun.en.mp3');
+
+    t.store.set({ lang: 'de' });
+    expect(t.audio.playNarration).toHaveBeenLastCalledWith('audio/narration/sun.de.mp3');
+    expect(t.store.get().tour).toMatchObject({ status: 'narrating', index: 1 });
+    expect(t.tour.currentCue()?.text).toBe('sun Deutsch.');
+    expect(t.rig.flyTo).toHaveBeenCalledTimes(1); // no new flight: same stop
+  });
+
   it('switching to Japanese while muted shows Japanese subtitles without audio', async () => {
     const t = setup({ muted: true, manifest: manifestFor(10_000) });
     t.tour.dispatch({ type: 'START' });

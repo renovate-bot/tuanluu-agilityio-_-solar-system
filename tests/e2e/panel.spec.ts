@@ -125,3 +125,25 @@ test('the disclaimer stays clear of the mobile sheet', async ({ page }) => {
     expect(n.y + n.height).toBeLessThanOrEqual(p.y + 1);
   }).toPass({ timeout: 25_000 });
 });
+
+test('switching to German retitles the open panel and keeps the selection', async ({ page }) => {
+  test.slow();
+  await boot(page);
+  await page.evaluate(() => localStorage.setItem('sse.lang', 'en'));
+  await page.reload();
+  await page.waitForFunction(
+    () => (window as unknown as AppWindow).__app?.getState().ready === true,
+    null,
+    { timeout: 40_000 },
+  );
+  await select(page, 'earth');
+  const title = page.getByTestId('panel').locator('h2');
+  await expect(title).toHaveText('Earth', { timeout: 25_000 });
+  await page.getByTestId('lang').click();
+  await page.getByTestId('lang-option-de').click();
+  await expect(title).toHaveText('Erde', { timeout: 25_000 });
+  await expect(page.getByTestId('panel')).toBeVisible();
+  expect(
+    await page.evaluate(() => (window as unknown as AppWindow).__app.getState().selected),
+  ).toBe('earth');
+});
