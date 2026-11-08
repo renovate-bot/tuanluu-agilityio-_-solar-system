@@ -208,7 +208,8 @@ const DE: Record<UiKey, string> = {
   appTitle: 'Sonnensystem-Entdecker',
   hintDesktop:
     'Klicke auf einen Himmelskörper zum Hinfliegen · ziehen zum Drehen · scrollen zum Zoomen',
-  hintMobile: 'Tippe auf einen Himmelskörper zum Hinfliegen · ziehen zum Drehen · Pinch zum Zoomen',
+  hintMobile:
+    'Tippe auf einen Himmelskörper zum Hinfliegen · ziehen zum Drehen · Finger spreizen zum Zoomen',
   backToOverview: 'Zurück zur Übersicht',
   notToScale: 'Größen und Entfernungen sind nicht maßstabsgetreu',
 
@@ -223,7 +224,7 @@ const DE: Record<UiKey, string> = {
   'tour.prev': 'Zurück',
   'tour.exit': 'Tour beenden',
   'tour.progress': 'Station {current} von {total}',
-  'tour.unmuteHint': 'Schalte den Ton ein, um die Erzählung zu hören',
+  'tour.unmuteHint': 'Schalte den Ton ein, um den Sprecher zu hören',
 
   'credits.title': 'Quellen',
   'credits.textures': 'Texturen: Solar System Scope (CC BY 4.0)',
@@ -238,7 +239,7 @@ const DE: Record<UiKey, string> = {
     'Dein Browser oder Gerät unterstützt WebGL nicht, das zur Darstellung des Sonnensystems nötig ist.',
 
   'field.kind': 'Art',
-  'field.order': 'Reihenfolge von der Sonne',
+  'field.order': 'Position ab der Sonne',
   'field.diameter': 'Durchmesser',
   'field.mass': 'Masse (Erde = 1)',
   'field.distance': 'Mittlere Entfernung zur Sonne',

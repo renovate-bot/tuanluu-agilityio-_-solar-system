@@ -32,7 +32,7 @@ export const CONTENT_DE: Record<ContentId, BodyContent> = {
     name: 'Venus',
     kindLabel: 'Gesteinsplanet',
     description:
-      'Die Venus ist fast so groß wie die Erde, aber eine völlig andere Welt. Eine dichte Atmosphäre aus Kohlendioxid und Wolken aus Schwefelsäure halten die Wärme in einem außer Kontrolle geratenen Treibhauseffekt fest. Deshalb ist sie der heißeste Planet des Sonnensystems, obwohl der Merkur der Sonne näher ist.',
+      'Die Venus ist fast so groß wie die Erde, aber eine völlig andere Welt. Eine dichte Atmosphäre aus Kohlendioxid und Wolken aus Schwefelsäure halten die Wärme in einem galoppierenden Treibhauseffekt fest. Deshalb ist sie der heißeste Planet des Sonnensystems, obwohl der Merkur der Sonne näher ist.',
     facts: [
       'Die Oberfläche ist etwa 465 °C heiß, heiß genug, um Blei zu schmelzen.',
       'Die Venus dreht sich anders herum als die meisten Planeten, deshalb geht die Sonne dort im Westen auf.',
@@ -68,7 +68,7 @@ export const CONTENT_DE: Record<ContentId, BodyContent> = {
     name: 'Mars',
     kindLabel: 'Gesteinsplanet',
     description:
-      'Der Mars ist eine kalte, staubige Wüstenwelt, deren rote Farbe von rostigen Eisenmineralen im Boden stammt. Trockene Flussbetten und uralte Seeufer zeigen, dass einst flüssiges Wasser über seine Oberfläche floss. Heute ist er nach der Erde der am besten erforschte Planet, und Rover und Orbiter suchen nach Spuren früheren Lebens.',
+      'Der Mars ist eine kalte, staubige Wüstenwelt, deren rote Farbe von rostigen Eisenmineralen im Boden stammt. Trockene Flussbetten und uralte Seebetten zeigen, dass einst flüssiges Wasser über seine Oberfläche floss. Heute ist er nach der Erde der am besten erforschte Planet, und Rover und Orbiter suchen nach Spuren früheren Lebens.',
     facts: [
       'Der Olympus Mons auf dem Mars ist der größte Vulkan des Sonnensystems und etwa dreimal so hoch wie der Mount Everest.',
       'Ein Tag auf dem Mars dauert gut 24,6 Stunden und ist damit einem Erdentag sehr ähnlich.',
@@ -118,7 +118,7 @@ export const CONTENT_DE: Record<ContentId, BodyContent> = {
     name: 'Uranus',
     kindLabel: 'Eisriese',
     description:
-      'Uranus ist ein Eisriese, der auf der Seite liegend rotiert, seine Achse ist um etwa 98° gegen die Bahnebene geneigt. Methan in seiner Atmosphäre schluckt rotes Licht und verleiht dem Planeten seine blassblaugrüne Farbe. Er war 1781 der erste Planet, den William Herschel mit einem Teleskop entdeckte.',
+      'Uranus ist ein Eisriese, der auf der Seite liegend rotiert, seine Achse ist um etwa 98° gegen die Bahnebene geneigt. Methan in seiner Atmosphäre schluckt rotes Licht und verleiht dem Planeten seine blassblaugrüne Farbe. Er war der erste Planet, der mit einem Teleskop entdeckt wurde: William Herschel fand ihn 1781.',
     facts: [
       'Wegen der Neigung bekommt jeder Pol etwa 21 Jahre lang ununterbrochen Sonnenlicht und dann 21 Jahre lang Dunkelheit.',
       'Uranus dreht sich entgegengesetzt zu den meisten Planeten.',

@@ -83,6 +83,32 @@ async function expectFits(
   if (opts.buttons) expect(result.buttons, `${label}: no button measured`).toBeGreaterThan(0);
 }
 
+/** Visible body labels (nowrap buttons, auto width) stay fully inside the viewport; the label layer clips overflow. */
+async function expectLabelsFit(page: Page, label: string): Promise<void> {
+  const result = await page.evaluate(() => {
+    const out: string[] = [];
+    let count = 0;
+    for (const el of document.querySelectorAll<HTMLElement>('.body-label')) {
+      const r = el.getBoundingClientRect();
+      if (el.hidden || r.width <= 0 || r.height <= 0) continue;
+      count++;
+      const name = `label[${el.dataset['body'] ?? ''}] "${(el.textContent ?? '').trim()}"`;
+
+      if (
+        r.right > innerWidth + 0.5 ||
+        r.left < -0.5 ||
+        r.bottom > innerHeight + 0.5 ||
+        r.top < -0.5
+      ) {
+        out.push(`off-screen ${name}`);
+      }
+    }
+    return { out, count };
+  });
+  expect(result.out, label).toEqual([]);
+  expect(result.count, `${label}: no label measured`).toBeGreaterThan(0);
+}
+
 test.describe('German layout fit', () => {
   test('control bar, body panel, tour UI, language picker and credits fit', async ({
     page,
@@ -97,6 +123,7 @@ test.describe('German layout fit', () => {
     await expectFits(page, '[data-testid="credits"]', 'credits button', { buttons: true });
     await expectFits(page, '[data-testid="sound"]', 'sound button', { buttons: true });
     await expectFits(page, '[data-testid="tour"]', 'tour button', { buttons: true });
+    await expectLabelsFit(page, 'body labels');
 
     await page.evaluate(() => {
       void (window as unknown as AppWindow).__app.select('earth');
@@ -122,6 +149,15 @@ test.describe('German layout fit', () => {
       .toBe(true);
     await expectFits(page, '[data-testid="panel"]', 'body panel', { buttons: true });
 
+    await page.getByTestId('back').click();
+    await expect(page.getByTestId('panel')).toBeHidden({ timeout: 25_000 });
+
+    await page.evaluate(() => {
+      void (window as unknown as AppWindow).__app.select('asteroid-belt');
+    });
+    await expect(page.getByTestId('panel')).toContainText('Asteroidengürtel', { timeout: 25_000 });
+    await page.waitForTimeout(1500);
+    await expectFits(page, '[data-testid="panel"]', 'asteroid belt panel', { buttons: true });
     await page.getByTestId('back').click();
     await expect(page.getByTestId('panel')).toBeHidden({ timeout: 25_000 });
 

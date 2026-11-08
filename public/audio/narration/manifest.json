@@ -276,8 +276,8 @@
       },
       "de": {
         "file": "audio/narration/sun.de.mp3",
-        "durationMs": 33213,
-        "hash": "d090becc5ea8947f0deab0804f69c4ca67f28e58d80db759b3d156ed10af374d",
+        "durationMs": 33263,
+        "hash": "9b1db2faa157dc8a76701f662f75788904a21d8f52511dd4f202fc4e3527a1cf",
         "cues": [
           {
             "startMs": 0,
@@ -286,17 +286,17 @@
           },
           {
             "startMs": 4088,
-            "endMs": 12450,
-            "text": "Sie misst etwa eins Komma vier Millionen Kilometer im Durchmesser, und rund eine Komma drei Millionen Erden würden in sie hineinpassen."
+            "endMs": 12500,
+            "text": "Sie misst etwa eins Komma vier Millionen Kilometer im Durchmesser, und rund eins Komma drei Millionen Erden würden in sie hineinpassen."
           },
           {
-            "startMs": 12450,
-            "endMs": 23988,
+            "startMs": 12500,
+            "endMs": 24038,
             "text": "Tief im Kern verschmilzt Wasserstoff bei etwa 15 Millionen Grad Celsius zu Helium, während die leuchtende Oberfläche mit 5.500 Grad vergleichsweise kühl ist."
           },
           {
-            "startMs": 23988,
-            "endMs": 33213,
+            "startMs": 24038,
+            "endMs": 33263,
             "text": "Und jetzt die Überraschung: Sonnenlicht braucht etwa acht Minuten bis zur Erde, du siehst die Sonne also immer so, wie sie vor acht Minuten war."
           }
         ]
@@ -511,8 +511,8 @@
       },
       "de": {
         "file": "audio/narration/venus.de.mp3",
-        "durationMs": 39038,
-        "hash": "98288b3179c756a77601eabf8679a531c45ca5e5b8ef8254915079a8f6a2f50e",
+        "durationMs": 39063,
+        "hash": "54f76040c39f245507f16cfc6a1654ba3d5bd922170dcff866d18fb590484cd1",
         "cues": [
           {
             "startMs": 0,
@@ -526,12 +526,12 @@
           },
           {
             "startMs": 10176,
-            "endMs": 25950,
-            "text": "Dichte Kohlendioxidluft und Wolken aus Schwefelsäure halten die Wärme in einem außer Kontrolle geratenen Treibhauseffekt fest, sodass es an der Oberfläche etwa 465 Grad Celsius heiß wird, genug, um Blei zu schmelzen."
+            "endMs": 25975,
+            "text": "Eine dichte Kohlendioxidatmosphäre und Wolken aus Schwefelsäure halten die Wärme in einem galoppierenden Treibhauseffekt fest, sodass es an der Oberfläche etwa 465 Grad Celsius heiß wird, genug, um Blei zu schmelzen."
           },
           {
-            "startMs": 25950,
-            "endMs": 39038,
+            "startMs": 25975,
+            "endMs": 39063,
             "text": "Noch seltsamer: Die Venus dreht sich rückwärts, die Sonne geht dort im Westen auf, und ein einziger Tag dauert mit 243 Erdentagen länger als ihr Jahr mit 225 Tagen."
           }
         ]
@@ -646,8 +646,8 @@
       },
       "de": {
         "file": "audio/narration/earth.de.mp3",
-        "durationMs": 37976,
-        "hash": "9531d25307080fed60c645b464e8e7d964952c09fe51c5cb648c66cc5249cd9f",
+        "durationMs": 38563,
+        "hash": "d62356fb203e1b9642b2b54bd96c5aa0b46739aa1836445fe1ddc21be67c9255",
         "cues": [
           {
             "startMs": 0,
@@ -666,12 +666,12 @@
           },
           {
             "startMs": 22000,
-            "endMs": 29288,
-            "text": "Ihre Achse ist um gut 23 Grad geneigt, und genau diese Neigung beschert uns die Jahreszeiten."
+            "endMs": 29875,
+            "text": "Ihre Achse ist um etwa dreiundzwanzigeinhalb Grad geneigt, und genau diese Neigung beschert uns die Jahreszeiten."
           },
           {
-            "startMs": 29288,
-            "endMs": 37976,
+            "startMs": 29875,
+            "endMs": 38563,
             "text": "Übrigens: Die Erde ist der einzige Planet in unserem System, der nicht nach einem griechischen oder römischen Gott benannt ist."
           }
         ]
@@ -766,8 +766,8 @@
       },
       "de": {
         "file": "audio/narration/mars.de.mp3",
-        "durationMs": 40075,
-        "hash": "198991245e871f6dbd1fd20be873b8f30c20464d1af3a97ec8b7cb28dbe70d7c",
+        "durationMs": 39662,
+        "hash": "ac5130d22649e452aa497a7b4a5c795f51106d80bf4bbf3dddcefc1e4c2e56c4",
         "cues": [
           {
             "startMs": 0,
@@ -781,12 +781,12 @@
           },
           {
             "startMs": 18650,
-            "endMs": 31675,
-            "text": "Ein Tag dauert hier gut 24 Stunden und eine halbe, ein Jahr dagegen 687 Erdentage, und die Durchschnittstemperatur liegt bei frostigen minus 65 Grad Celsius."
+            "endMs": 31262,
+            "text": "Ein Tag dauert hier gut vierundzwanzigeinhalb Stunden, ein Jahr dagegen 687 Erdentage, und die Durchschnittstemperatur liegt bei frostigen minus 65 Grad Celsius."
           },
           {
-            "startMs": 31675,
-            "endMs": 40075,
+            "startMs": 31262,
+            "endMs": 39662,
             "text": "Auf dem Mars steht auch der Olympus Mons, der größte Vulkan des Sonnensystems, etwa dreimal so hoch wie der Mount Everest."
           }
         ]
@@ -1281,8 +1281,8 @@
       },
       "de": {
         "file": "audio/narration/uranus.de.mp3",
-        "durationMs": 39987,
-        "hash": "c99fab30d9b7e6fcece86ddc730ec0e823fe3566994eacd4bf70f459cd8f0333",
+        "durationMs": 41675,
+        "hash": "3275e68fa3e3b31b9374b37eb660b0115080e4a90cf16d83e00f103e2d85fa36",
         "cues": [
           {
             "startMs": 0,
@@ -1306,8 +1306,8 @@
           },
           {
             "startMs": 31775,
-            "endMs": 39987,
-            "text": "Uranus war außerdem 1781 der erste Planet, den William Herschel mit einem Teleskop entdeckte."
+            "endMs": 41675,
+            "text": "Uranus war außerdem der erste Planet, der mit einem Teleskop entdeckt wurde: William Herschel fand ihn 1781 am Nachthimmel."
           }
         ]
       }

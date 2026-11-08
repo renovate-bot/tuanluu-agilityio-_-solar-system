@@ -11,7 +11,7 @@ Tài liệu này giải thích từng phần của bộ khung (harness) giúp AI
 
 ## 2. CLAUDE.md lồng nhau
 
-- **Là gì:** file ngữ cảnh đặt trong thư mục con, chỉ được nạp khi agent làm việc trong thư mục đó. Hiện có `src/data/CLAUDE.md`: danh sách việc phải làm khi thêm một thiên thể (dữ liệu, nội dung vi/en, tour, khoá texture, nguồn trong `fetch-textures`, sinh lại giọng đọc, test cần cập nhật).
+- **Là gì:** file ngữ cảnh đặt trong thư mục con, chỉ được nạp khi agent làm việc trong thư mục đó. Hiện có `src/data/CLAUDE.md`: danh sách việc phải làm khi thêm một thiên thể (dữ liệu, nội dung vi/en/ja/de, tour, khoá texture, nguồn trong `fetch-textures`, sinh lại giọng đọc, test cần cập nhật).
 - **Vì sao:** quy ước riêng của một thư mục không cần tốn token ở mọi phiên.
 - **Cách chỉnh:** sửa trực tiếp file đó khi cấu trúc code đổi (ví dụ đổi tên hàm hay thêm nơi phải khai báo). Có thể thêm file tương tự ở thư mục khác.
 

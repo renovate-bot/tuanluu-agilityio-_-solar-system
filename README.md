@@ -1,6 +1,6 @@
 # Solar System Explorer
 
-An interactive, bilingual (Vietnamese / English) 3D tour of the Solar System that runs in the browser and is designed mobile-first. Fly from the Sun to Pluto, tap any body for NASA-based facts, or sit back and let the narrated Tour Guide take you around.
+An interactive, multilingual (Vietnamese / English / Japanese / German) 3D tour of the Solar System that runs in the browser and is designed mobile-first. Fly from the Sun to Pluto, tap any body for NASA-based facts, or sit back and let the narrated Tour Guide take you around.
 
 **Live demo:** https://tuanluu-agilityio.github.io/solar-system/
 
@@ -12,7 +12,7 @@ An interactive, bilingual (Vietnamese / English) 3D tour of the Solar System tha
 
 - **Realistic, easy-to-read Solar System:** Sun with bloom, 8 planets, the Moon, Pluto and an instanced asteroid belt, with the Milky Way as background. Sizes and distances are compressed for readability (a "not to scale" note is always shown).
 - **Fly-to inspection:** tap or click a body (or its label) and the camera flies to it. Orbit and zoom like a map; a tap that is really a drag never selects.
-- **Info panel:** left panel on desktop, bottom sheet on phones, with NASA-based facts in Vietnamese and English.
+- **Info panel:** left panel on desktop, bottom sheet on phones, with NASA-based facts in Vietnamese, English, Japanese and German.
 - **Tour Guide:** 14 narrated stops (intro, 12 bodies, outro) with synchronised subtitles. It autostarts once on the first visit; any touch pauses it. Narration is generated with Microsoft Edge TTS (`vi-VN-HoaiMyNeural`, `en-US-AvaNeural`) and committed as mp3, so no network call is needed at runtime.
 - **Sound:** procedural ambient sound and a fly-to whoosh built with the Web Audio API. Muted by default, starts only after a user gesture, and ducks under the narration.
 - **Adaptive quality:** low / medium / high tiers; an FPS monitor steps down on real GPUs (never under software rendering) while keeping textures, sun light and bloom.
