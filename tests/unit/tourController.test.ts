@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TOUR_STOPS } from '../../src/data/tour/stops';
+import de from '../../src/data/tour/de.json';
 import en from '../../src/data/tour/en.json';
 import ja from '../../src/data/tour/ja.json';
 import vi_ from '../../src/data/tour/vi.json';
@@ -15,7 +16,7 @@ import { estimateDurationMs, type NarrationManifest } from '../../src/tour/narra
 import { TOUR_GAP_MS, initialTour } from '../../src/tour/tourMachine';
 import { NARRATION_LOAD_TIMEOUT_MS, type NarrationResult } from '../../src/audio/audioEngine';
 
-const scripts = { vi: vi_, en, ja } as TourDeps['scripts'];
+const scripts = { vi: vi_, en, ja, de } as TourDeps['scripts'];
 
 function makeStore(muted: boolean): Store<AppState> {
   return createStore<AppState>({

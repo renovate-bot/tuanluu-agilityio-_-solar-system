@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import en from '../../src/data/tour/en.json';
+import de from '../../src/data/tour/de.json';
 import ja from '../../src/data/tour/ja.json';
 import vi from '../../src/data/tour/vi.json';
 import { SUPPORTED_LANGS, type Lang } from '../../src/data/types';
@@ -25,9 +26,16 @@ const STOP_IDS = [
   'pluto',
   'outro',
 ];
-const LANGS: readonly Lang[] = SUPPORTED_LANGS;
-const SCRIPTS: Record<Lang, Record<string, { text: string }>> = { vi, en, ja };
-const VOICE_PREFIX: Record<Lang, string> = { vi: 'vi-VN-', en: 'en-US-', ja: 'ja-JP-' };
+// German narration clips arrive in the next task; Task 2 removes this constant.
+const LANGS_WITHOUT_AUDIO_YET: readonly Lang[] = ['de'];
+const LANGS: readonly Lang[] = SUPPORTED_LANGS.filter((l) => !LANGS_WITHOUT_AUDIO_YET.includes(l));
+const SCRIPTS: Record<Lang, Record<string, { text: string }>> = { vi, en, ja, de };
+const VOICE_PREFIX: Record<Lang, string> = {
+  vi: 'vi-VN-',
+  en: 'en-US-',
+  ja: 'ja-JP-',
+  de: 'de-DE-',
+};
 
 // The generated assets are build inputs committed to git. This suite only runs
 // meaningful checks once the manifest exists (after `npm run narration`).

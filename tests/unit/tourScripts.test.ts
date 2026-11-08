@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getContent } from '../../src/data/content';
 import { TOUR_STOPS } from '../../src/data/tour/stops';
 import en from '../../src/data/tour/en.json';
+import de from '../../src/data/tour/de.json';
 import ja from '../../src/data/tour/ja.json';
 import vi from '../../src/data/tour/vi.json';
 import { SUPPORTED_LANGS, type ContentId, type Lang } from '../../src/data/types';
@@ -24,13 +25,14 @@ const EXPECTED_IDS = [
 ];
 
 type Script = Record<string, { text: string }>;
-const SCRIPTS: Record<Lang, Script> = { vi, en, ja };
+const SCRIPTS: Record<Lang, Script> = { vi, en, ja, de };
 // vi/en count whitespace-separated words; ja (written without spaces) counts
 // non-space characters, sized like the English 50-100 words (about 15-45 s of speech).
 const LENGTH_LIMITS: Record<Lang, [number, number]> = {
   vi: [60, 110],
   en: [50, 100],
   ja: [110, 320],
+  de: [45, 105],
 };
 const LANGS: readonly Lang[] = SUPPORTED_LANGS;
 
@@ -101,5 +103,24 @@ describe('Japanese tour script', () => {
     const text = (ja as Script)[id]?.text ?? '';
     expect(text).not.toMatch(/[.!?](\s|$)/);
     expect(text).toMatch(/[\p{Script=Hiragana}\p{Script=Katakana}]/u);
+  });
+});
+
+describe('German tour script', () => {
+  it.each(EXPECTED_IDS)('%s has no mid-sentence dots', (id) => {
+    const text = (de as Script)[id]?.text ?? '';
+    expect(text).not.toMatch(/\b[a-zA-Z]\.\s?[a-zA-Z]\./); // z. B., d. h., u. a.
+    expect(text).not.toMatch(/\b(ca|bzw|usw|etc|ggf|vgl|Mrd|Mio|Nr|Dr|St)\./i);
+    expect(text).not.toMatch(/\d\.\s/); // ordinals; also rules out a sentence ending in a digit
+  });
+  it.each(EXPECTED_IDS)('%s does not mistranslate billion', (id) =>
+    expect((de as Script)[id]?.text ?? '').not.toMatch(/\bBillion/),
+  );
+  it('addresses the viewer informally', () => {
+    const all = Object.values(de as Script)
+      .map((s) => s.text)
+      .join(' ');
+    // Not "Ihre": at a sentence start it also means "its/their" for a planet.
+    expect(all).not.toMatch(/\b(Sie sehen|Schauen Sie|Stellen Sie|Fliegen Sie)\b/);
   });
 });

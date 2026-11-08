@@ -1,5 +1,5 @@
 /** Locales shipped in this phase: UI, body content, tour script and narration are complete for each. */
-export const SUPPORTED_LANGS = ['vi', 'en', 'ja'] as const;
+export const SUPPORTED_LANGS = ['vi', 'en', 'ja', 'de'] as const;
 export type Lang = (typeof SUPPORTED_LANGS)[number];
 
 export function isLang(value: unknown): value is Lang {

@@ -42,17 +42,24 @@ describe('detectLang', () => {
     expect(detectLang(['ja', 'vi-VN'])).toBe('ja');
     expect(detectLang(['vi', 'ja'])).toBe('vi');
   });
-  it('skips unsupported ko/de/ru entries', () => {
-    expect(detectLang(['ko-KR', 'de-DE', 'ja-JP'])).toBe('ja');
-    expect(detectLang(['ko', 'de', 'ru'])).toBe('en');
+  it('skips unsupported ko/fr/ru entries', () => {
+    expect(detectLang(['ko-KR', 'fr-FR', 'ja-JP'])).toBe('ja');
+    expect(detectLang(['ko', 'fr', 'ru'])).toBe('en');
+  });
+  it.each(['de', 'de-DE', 'de-AT', 'de-CH', 'DE'])('%s gives German', (tag) =>
+    expect(detectLang([tag])).toBe('de'),
+  );
+  it('takes the first supported entry', () => {
+    expect(detectLang(['fr-FR', 'de-DE'])).toBe('de');
+    expect(detectLang(['en-US', 'de-DE'])).toBe('en');
   });
   it('does not match a tag that merely starts with a supported code', () =>
     expect(detectLang(['jam', 'vin'])).toBe('en'));
 });
 
 describe('SUPPORTED_LANGS', () => {
-  it('is exactly vi, en, ja in this phase', () =>
-    expect([...SUPPORTED_LANGS]).toEqual(['vi', 'en', 'ja']));
+  it('is exactly vi, en, ja, de in this phase', () =>
+    expect([...SUPPORTED_LANGS]).toEqual(['vi', 'en', 'ja', 'de']));
 });
 
 describe('loadPrefs', () => {
@@ -66,6 +73,8 @@ describe('loadPrefs', () => {
     const p = loadPrefs(mem({ [PREF_KEYS.tourSeen]: 'true', [PREF_KEYS.lang]: 'en' }), ['vi']);
     expect(p).toEqual({ lang: 'en', muted: true, tourSeen: true });
   });
+  it('a saved de wins over the browser languages', () =>
+    expect(loadPrefs(mem({ [PREF_KEYS.lang]: 'de' }), ['ja']).lang).toBe('de'));
   it('a saved ja wins over the browser languages', () => {
     expect(loadPrefs(mem({ [PREF_KEYS.lang]: 'ja' }), ['vi']).lang).toBe('ja');
   });
@@ -75,7 +84,7 @@ describe('loadPrefs', () => {
   });
   it('unsupported saved values (ko, JA, ja-JP) fall back to detection', () => {
     expect(loadPrefs(mem({ [PREF_KEYS.lang]: 'ko' }), ['ja-JP']).lang).toBe('ja');
-    expect(loadPrefs(mem({ [PREF_KEYS.lang]: 'ja-JP' }), ['de']).lang).toBe('en');
+    expect(loadPrefs(mem({ [PREF_KEYS.lang]: 'ja-JP' }), ['fr']).lang).toBe('en');
   });
   it('detects Japanese with empty storage', () => {
     expect(loadPrefs(mem(), ['ja-JP', 'en']).lang).toBe('ja');

@@ -2,7 +2,7 @@ import type { Lang } from '../data/types';
 
 // UI strings. Keys are flat dotted strings ('tour.start'). The English table is
 // the source of the key set: add a key here first, then TypeScript requires the
-// same key in the Vietnamese and Japanese tables. Placeholders use {name} syntax.
+// same key in the Vietnamese, Japanese and German tables. Placeholders use {name} syntax.
 const EN = {
   appTitle: 'Solar System Explorer',
   hintDesktop: 'Click a body to fly to it · drag to orbit · scroll to zoom',
@@ -203,10 +203,79 @@ const JA: Record<UiKey, string> = {
   'lang.close': '閉じる',
 };
 
+// German: AI translation from the English table, informal "du" form.
+const DE: Record<UiKey, string> = {
+  appTitle: 'Sonnensystem-Entdecker',
+  hintDesktop:
+    'Klicke auf einen Himmelskörper zum Hinfliegen · ziehen zum Drehen · scrollen zum Zoomen',
+  hintMobile: 'Tippe auf einen Himmelskörper zum Hinfliegen · ziehen zum Drehen · Pinch zum Zoomen',
+  backToOverview: 'Zurück zur Übersicht',
+  notToScale: 'Größen und Entfernungen sind nicht maßstabsgetreu',
+
+  'sound.on': 'Ton an',
+  'sound.off': 'Ton aus',
+
+  'tour.start': 'Tour starten',
+  'tour.stop': 'Tour stoppen',
+  'tour.pause': 'Pause',
+  'tour.resume': 'Fortsetzen',
+  'tour.next': 'Weiter',
+  'tour.prev': 'Zurück',
+  'tour.exit': 'Tour beenden',
+  'tour.progress': 'Station {current} von {total}',
+  'tour.unmuteHint': 'Schalte den Ton ein, um die Erzählung zu hören',
+
+  'credits.title': 'Quellen',
+  'credits.textures': 'Texturen: Solar System Scope (CC BY 4.0)',
+  'credits.data': 'Daten: NASA Planetary Fact Sheet und NASA Science',
+  'credits.voice': 'Sprecherstimme erzeugt mit Microsoft Edge TTS',
+  'credits.support': 'Buy me a coffee',
+  'credits.close': 'Schließen',
+
+  loading: 'Das Sonnensystem wird geladen…',
+  'error.boot': 'Beim Starten der App ist etwas schiefgelaufen. Bitte lade die Seite neu.',
+  webglUnsupported:
+    'Dein Browser oder Gerät unterstützt WebGL nicht, das zur Darstellung des Sonnensystems nötig ist.',
+
+  'field.kind': 'Art',
+  'field.order': 'Reihenfolge von der Sonne',
+  'field.diameter': 'Durchmesser',
+  'field.mass': 'Masse (Erde = 1)',
+  'field.distance': 'Mittlere Entfernung zur Sonne',
+  'field.orbitalPeriod': 'Umlaufzeit',
+  'field.rotationPeriod': 'Rotationsdauer',
+  'field.meanTemp': 'Mittlere Temperatur',
+  'field.moons': 'Bekannte Monde',
+  'field.gravity': 'Oberflächenschwerkraft',
+
+  'field.distanceEarth': 'Mittlere Entfernung zur Erde',
+  'unit.km': 'km',
+  'unit.millionKm': 'Mio. km',
+  'unit.days': 'Tage',
+  'unit.years': 'Jahre',
+  'unit.hours': 'Stunden',
+  'unit.earthMass': '× Erde',
+  'unit.retrograde': '(rückläufig)',
+  'panel.order': '{kind} Nr. {n}',
+  'panel.facts': 'Wissenswertes',
+
+  'kind.star': 'Stern',
+  'kind.terrestrial': 'Gesteinsplanet',
+  'kind.gas-giant': 'Gasriese',
+  'kind.ice-giant': 'Eisriese',
+  'kind.dwarf-planet': 'Zwergplanet',
+  'kind.moon': 'Mond',
+
+  'lang.switch': 'Sprache wechseln',
+  'lang.title': 'Sprache',
+  'lang.close': 'Schließen',
+};
+
 export const UI_STRINGS: Record<Lang, Record<UiKey, string>> = {
   vi: VI,
   en: EN,
   ja: JA,
+  de: DE,
 };
 
 /**
@@ -217,4 +286,5 @@ export const LANG_NATIVE_NAMES: Record<Lang, string> = {
   vi: 'Tiếng Việt',
   en: 'English',
   ja: '日本語',
+  de: 'Deutsch',
 };
