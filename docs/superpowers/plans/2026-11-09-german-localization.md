@@ -44,7 +44,7 @@
 **Interfaces:**
 - Produces: `SUPPORTED_LANGS = ['vi', 'en', 'ja', 'de'] as const`; `CONTENT_DE` exported from `src/data/content/de.ts`; `UI_STRINGS.de`; `LANG_NATIVE_NAMES.de = 'Deutsch'`; `NUMBER_LOCALES.de = 'de-DE'`; `src/data/tour/de.json` with the 14 stop keys, shape `{ "<stopId>": { "text": string } }`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `prefs.test.ts`:
 ```ts
@@ -101,21 +101,21 @@ Also assert in `content.test.ts` that no German body string matches `/\bBillion/
 
 `languagePicker.test.ts`: four options, including `Deutsch`; selecting it calls `onSelect('de')`.
 
-- [ ] **Step 2: Run to verify they fail**
+- [x] **Step 2: Run to verify they fail**
 
 Run: `npm test -- tests/unit/prefs.test.ts tests/unit/i18n.test.ts tests/unit/content.test.ts tests/unit/tourScripts.test.ts tests/unit/languagePicker.test.ts`
 Expected: FAIL (missing `de.json` import and `de` tables).
 
-- [ ] **Step 3: Add the locale and German data**
+- [x] **Step 3: Add the locale and German data**
 
 Add `'de'` to `SUPPORTED_LANGS`, then satisfy every `Record<Lang, ...>`. Translate `UI_STRINGS.de`, `CONTENT_DE` and `de.json` from English, following the Global Constraints. Script style: `zum Beispiel`, `etwa`, `das heißt`, `Milliarden`, `Millionen`, `der achte Planet`; rephrase so no sentence ends in a digit. Keep UI labels short from the start (mobile buttons). Update the `prefs.ts:20` comment, whose `de` example is stale.
 
-- [ ] **Step 4: Run to verify they pass**
+- [x] **Step 4: Run to verify they pass**
 
 Run: same command as Step 2, then `npm run typecheck`.
 Expected: PASS, including the unchanged `vi`, `en`, `ja` cases.
 
-- [ ] **Step 5: Commit** `feat(t38): add German UI, content and tour scripts` with the source and test files.
+- [x] **Step 5: Commit** `feat(t38): add German UI, content and tour scripts` with the source and test files.
 
 ### Task 2: German narration
 
@@ -127,12 +127,12 @@ Expected: PASS, including the unchanged `vi`, `en`, `ja` cases.
 - Consumes: `src/data/tour/de.json` from Task 1.
 - Produces: `VOICES["de"]`, and a manifest with 56 stop/locale segments.
 
-- [ ] **Step 1: Confirm the voice**
+- [x] **Step 1: Confirm the voice**
 
 Run: `python -c "import asyncio, edge_tts; print([(v['ShortName'], v['Gender']) for v in asyncio.run(edge_tts.list_voices()) if v['Locale']=='de-DE'])"`
 Expected: `de-DE-KatjaNeural` listed as Female. If it is not, use the closest female `de-DE` Neural voice and log a `DECISION:`.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 Python: `list(gn.VOICES) == ["vi", "en", "ja", "de"]` and `gn.VOICES["de"]` matches `^de-DE-[A-Za-z]+Neural$`.
 
@@ -140,17 +140,17 @@ Python: `list(gn.VOICES) == ["vi", "en", "ja", "de"]` and `gn.VOICES["de"]` matc
 
 `narration.test.ts`: `estimateDurationMs` on a German sentence counts whole words (umlauts and `ß` do not split a word); `resolveSegment(null, 'earth', 'de', 'Erster Satz. Zweiter Satz mit 4,6 Milliarden Jahren.')` returns exactly 2 cues, with `4,6` intact.
 
-- [ ] **Step 3: Run to verify they fail**
+- [x] **Step 3: Run to verify they fail**
 
 Run: `python scripts/test_generate_narration.py`; `npm test -- tests/unit/narrationAssets.test.ts`
 Expected: FAIL on the missing `de` voice and manifest entries. The `narration.test.ts` cases may already pass, because the code is generic; they stay as regression pins and that is noted in the progress file.
 
-- [ ] **Step 4: Add the voice and generate**
+- [x] **Step 4: Add the voice and generate**
 
 Add `"de"` to `VOICES` and update the docstring. There is no `.venv`, so run `python scripts/generate-narration.py` with global Python 3.14 from the worktree.
 Expected: 14 German clips created; unchanged text not regenerated.
 
-- [ ] **Step 5: Verify nothing else changed, and tests pass**
+- [x] **Step 5: Verify nothing else changed, and tests pass**
 
 Run: `git status --short public/audio/narration`
 Expected: only `manifest.json` modified plus 14 new `.de.mp3` files.
@@ -161,7 +161,7 @@ Expected: no assertion error.
 Run: `python scripts/test_generate_narration.py`; `npm test -- tests/unit/narration.test.ts tests/unit/narrationAssets.test.ts tests/unit/tourController.test.ts`
 Expected: PASS. If a cue mismatch appears, fix the punctuation in `de.json` or rely on the existing `align_cue_text()`, then regenerate the affected stops.
 
-- [ ] **Step 6: Commit** `feat(t38): add German narration`.
+- [x] **Step 6: Commit** `feat(t38): add German narration`.
 
 ### Task 3: Mobile fit, mid-tour switch, docs and verification
 
@@ -172,7 +172,7 @@ Expected: PASS. If a cue mismatch appears, fix the punctuation in `de.json` or r
 **Interfaces:**
 - Consumes: the complete `de` locale and manifest from Tasks 1-2; the existing e2e helpers and selectors in `panel.spec.ts` and `controls.spec.ts`.
 
-- [ ] **Step 1: Write the tests**
+- [x] **Step 1: Write the tests**
 
 `tourController.test.ts`: switching to `de` during an unmuted stop restarts the same stop with the `de` segment.
 
@@ -187,28 +187,28 @@ expect(box.width).toBeGreaterThanOrEqual(44);
 expect(box.height).toBeGreaterThanOrEqual(44);
 ```
 
-- [ ] **Step 2: Run them**
+- [x] **Step 2: Run them**
 
 Run: `npx playwright test tests/e2e/german-fit.spec.ts --project=desktop` first, then `--project=iphone13` and `--project=pixel7`, one at a time. Then the same for `controls`, `panel`, `flows`, `tour`.
 Expected: note every failure. Behaviour tests that pass at once stay as regression pins.
 
-- [ ] **Step 3: Fix any overflow**
+- [x] **Step 3: Fix any overflow**
 
 Shorten the German string first. Only if that cannot work, add `overflow-wrap: anywhere` or `hyphens: auto` scoped to `:lang(de)` so other locales keep their exact look.
 
-- [ ] **Step 4: Update the docs**
+- [x] **Step 4: Update the docs**
 
 `AGENTS.md`: purpose line and `src/data` folder note list vi/en/ja/de; supported locales add `de` with only Korean and Russian deferred; AI-translation note covers Japanese and German; add `de-DE-<voice>` to Voices. `src/data/CLAUDE.md`: same locale and proofreading note. `docs/HUMAN_REVIEW.md` (Vietnamese): add a to-do for a native German speaker to proofread UI, body content and tour scripts.
 
-- [ ] **Step 5: Full verification**
+- [x] **Step 5: Full verification**
 
 Run: `npm run lint`; `npm run typecheck`; `npm test`; `python scripts/test_generate_narration.py`; `npx prettier --check --end-of-line auto .`; `npm run build`; `npm run check:budget`
 Expected: all pass, JS gzip at most 800 KB, initial payload at most 8 MB.
 
-- [ ] **Step 6: Commit** `feat(t38): verify German on mobile and update docs`, together with this plan and the spec.
+- [x] **Step 6: Commit** `feat(t38): verify German on mobile and update docs`, together with this plan and the spec.
 
-- [ ] **Step 7: Review.** Run `reviewer` on the branch diff (spec compliance, then code quality, and a fact check of German against English on a sample of stops). At most 2 fix rounds, with new commits.
+- [x] **Step 7: Review.** Run `reviewer` on the branch diff (spec compliance, then code quality, and a fact check of German against English on a sample of stops). At most 2 fix rounds, with new commits.
 
-- [ ] **Step 8: Record.** Write `docs/progress/t38.md` in the style of `t37.md`, tick this plan, commit `docs(t38): record progress`.
+- [x] **Step 8: Record.** Write `docs/progress/t38.md` in the style of `t37.md`, tick this plan, commit `docs(t38): record progress`.
 
 - [ ] **Step 9: Ask the user before going outward.** Report results and get approval, then push, `gh pr create --base main`, `gh pr checks <n> --watch --fail-fast` (2 fix rounds at most). Merging deploys to GitHub Pages: `gh pr merge <n> --merge --delete-branch`, `git worktree remove .worktrees/t38`, pull `main`.
