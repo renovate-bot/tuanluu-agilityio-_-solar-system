@@ -17,7 +17,7 @@ export const PREF_KEYS = {
 
 /**
  * First supported primary language in browser order (case-insensitive, region ignored:
- * `ja-JP` -> `ja`), else English. Unsupported entries such as `ko` or `de` are skipped.
+ * `ja-JP` -> `ja`), else English. Unsupported entries such as `ko` or `fr` are skipped.
  */
 export function detectLang(languages: readonly string[]): Lang {
   for (const tag of languages) {

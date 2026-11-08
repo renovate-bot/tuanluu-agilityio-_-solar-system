@@ -23,7 +23,7 @@ async function hintKey(page: Page): Promise<'hintMobile' | 'hintDesktop'> {
   return layout === 'mobile' ? 'hintMobile' : 'hintDesktop';
 }
 
-async function chooseLang(page: Page, lang: 'vi' | 'en' | 'ja'): Promise<void> {
+async function chooseLang(page: Page, lang: 'vi' | 'en' | 'ja' | 'de'): Promise<void> {
   if ((await page.evaluate(() => document.documentElement.lang)) === lang) return;
   await page.getByTestId('lang').click();
   await page.getByTestId(`lang-option-${lang}`).click();
@@ -43,6 +43,7 @@ test('language picker switches to Japanese and persists across reload', async ({
     /Tiếng Việt/,
     /English/,
     /日本語/,
+    /Deutsch/,
     UI_STRINGS[initial]['lang.close'],
   ]);
   await page.getByTestId('lang-option-ja').click();
@@ -95,7 +96,13 @@ for (const vp of [
       () => document.documentElement.scrollWidth <= window.innerWidth,
     );
     expect(noOverflowX).toBe(true);
-    for (const id of ['lang-option-vi', 'lang-option-en', 'lang-option-ja', 'lang-close']) {
+    for (const id of [
+      'lang-option-vi',
+      'lang-option-en',
+      'lang-option-ja',
+      'lang-option-de',
+      'lang-close',
+    ]) {
       const target = page.getByTestId(id);
       await target.scrollIntoViewIfNeeded();
       const b = (await target.boundingBox())!;
@@ -210,4 +217,29 @@ test('switching to Japanese during an unmuted narration replays the same stop in
       timeout: 25_000,
     },
   );
+});
+
+test('switching to German during an unmuted narration replays the same stop in German', async ({
+  page,
+}) => {
+  test.slow();
+  await open(page);
+  await chooseLang(page, 'en');
+  await page.getByTestId('sound').click();
+  await page.getByTestId('tour').click();
+  type TourWindow = { __app: { getState(): { tour: { status: string; index: number } } } };
+  const tourState = () =>
+    page.evaluate(() => (window as unknown as TourWindow).__app.getState().tour);
+  await expect.poll(async () => (await tourState()).status, { timeout: 40_000 }).toBe('narrating');
+  const { index } = await tourState();
+  const deClip = page.waitForRequest(/audio\/narration\/[a-z-]+\.de\.mp3/, { timeout: 25_000 });
+  await chooseLang(page, 'de');
+  const request = await deClip;
+  expect(request.url()).toContain(index === 0 ? 'intro.de.mp3' : '.de.mp3');
+  expect((await tourState()).index).toBe(index);
+  await expect(page.getByTestId('subtitles')).not.toHaveText('', { timeout: 25_000 });
+  expect(await page.evaluate(() => localStorage.getItem('sse.lang'))).toBe('de');
+  await page.reload();
+  await open(page);
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe('de');
 });

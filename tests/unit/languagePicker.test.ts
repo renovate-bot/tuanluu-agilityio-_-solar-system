@@ -64,19 +64,22 @@ describe('language picker', () => {
     expect(document.getElementById(titleId)?.textContent).toBe(UI_STRINGS.en['lang.title']);
   });
 
-  it('lists exactly vi, en, ja by native name, each tagged with its own lang', () => {
+  it('lists exactly vi, en, ja, de by native name, each tagged with its own lang', () => {
     const p = setup();
     const options = [...p.overlay().querySelectorAll('[data-testid^="lang-option-"]')];
     expect(options.map((o) => o.getAttribute('data-testid'))).toEqual([
       'lang-option-vi',
       'lang-option-en',
       'lang-option-ja',
+      'lang-option-de',
     ]);
     expect(p.option('vi').textContent).toContain('Tiếng Việt');
     expect(p.option('en').textContent).toContain('English');
     expect(p.option('ja').textContent).toContain('日本語');
     expect(p.option('ja').getAttribute('lang')).toBe('ja');
-    expect(p.overlay().textContent).not.toMatch(/한국어|Deutsch|Русский/);
+    expect(p.option('de').textContent).toContain('Deutsch');
+    expect(p.option('de').getAttribute('lang')).toBe('de');
+    expect(p.overlay().textContent).not.toMatch(/한국어|Русский/);
   });
 
   it('marks the current locale and moves focus to it on open', () => {
@@ -94,6 +97,13 @@ describe('language picker', () => {
     expect(p.onSelect).toHaveBeenCalledWith('ja');
     expect(p.overlay().hidden).toBe(true);
     expect(document.activeElement).toBe(opener);
+  });
+
+  it('selecting German calls onSelect with de', () => {
+    const p = setup('en');
+    p.openIt();
+    p.option('de').click();
+    expect(p.onSelect).toHaveBeenCalledWith('de');
   });
 
   it('re-renders texts and the current mark in the new language', () => {

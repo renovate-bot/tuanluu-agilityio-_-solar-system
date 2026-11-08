@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import en from '../../src/data/tour/en.json';
+import de from '../../src/data/tour/de.json';
 import ja from '../../src/data/tour/ja.json';
 import vi from '../../src/data/tour/vi.json';
 import { SUPPORTED_LANGS, type Lang } from '../../src/data/types';
@@ -26,8 +27,13 @@ const STOP_IDS = [
   'outro',
 ];
 const LANGS: readonly Lang[] = SUPPORTED_LANGS;
-const SCRIPTS: Record<Lang, Record<string, { text: string }>> = { vi, en, ja };
-const VOICE_PREFIX: Record<Lang, string> = { vi: 'vi-VN-', en: 'en-US-', ja: 'ja-JP-' };
+const SCRIPTS: Record<Lang, Record<string, { text: string }>> = { vi, en, ja, de };
+const VOICE_PREFIX: Record<Lang, string> = {
+  vi: 'vi-VN-',
+  en: 'en-US-',
+  ja: 'ja-JP-',
+  de: 'de-DE-',
+};
 
 // The generated assets are build inputs committed to git. This suite only runs
 // meaningful checks once the manifest exists (after `npm run narration`).
@@ -44,7 +50,7 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
     }
   });
 
-  it('has 42 stop/language segments, each file named for its stop and language', () => {
+  it('has 56 stop/language segments, each file named for its stop and language', () => {
     let count = 0;
     for (const id of STOP_IDS) {
       for (const lang of LANGS) {
@@ -55,7 +61,7 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
       }
     }
     expect(count).toBe(STOP_IDS.length * LANGS.length);
-    expect(count).toBe(42);
+    expect(count).toBe(56);
   });
 
   it('cues spell out exactly the tour script of the same language', () => {
@@ -67,6 +73,18 @@ describe.runIf(existsSync(MANIFEST_PATH))('narration assets', () => {
         const spoken = squash(seg.cues.map((c) => c.text).join(''));
         expect(spoken, `${id}.${lang}`).toBe(squash(SCRIPTS[lang][id]?.text ?? ''));
       }
+    }
+  });
+
+  it('German cue text equals the de.json text, whitespace-normalized', () => {
+    const norm = (s: string): string => s.replace(/\s+/g, ' ').trim();
+    for (const id of STOP_IDS) {
+      const seg = manifest.segments[id as keyof typeof manifest.segments]?.de;
+      expect(seg, id).toBeDefined();
+      if (!seg) continue;
+      expect(norm(seg.cues.map((c) => c.text).join(' ')), id).toBe(
+        norm(de[id as keyof typeof de]?.text ?? ''),
+      );
     }
   });
 

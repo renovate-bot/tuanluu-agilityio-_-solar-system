@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CONTENT_EN, CONTENT_JA, CONTENT_VI, getContent } from '../../src/data/content';
+import { CONTENT_DE, CONTENT_EN, CONTENT_JA, CONTENT_VI, getContent } from '../../src/data/content';
 import { BODY_IDS, SUPPORTED_LANGS, type ContentId, type Lang } from '../../src/data/types';
 import { UI_STRINGS } from '../../src/i18n/strings';
 
@@ -22,6 +22,7 @@ describe('body content', () => {
     expect(Object.keys(CONTENT_VI).sort()).toEqual([...CONTENT_IDS].sort());
     expect(Object.keys(CONTENT_EN).sort()).toEqual([...CONTENT_IDS].sort());
     expect(Object.keys(CONTENT_JA).sort()).toEqual([...CONTENT_IDS].sort());
+    expect(Object.keys(CONTENT_DE).sort()).toEqual([...CONTENT_IDS].sort());
   });
 
   it('Japanese facts match the English fact count for every body', () => {
@@ -50,16 +51,34 @@ describe('body content', () => {
     }
   }
 
+  it('German facts match the English fact count for every body', () => {
+    for (const id of CONTENT_IDS) {
+      expect(CONTENT_DE[id].facts.length, id).toBe(CONTENT_EN[id].facts.length);
+    }
+  });
+
+  it('German body strings do not mistranslate billion', () => {
+    for (const id of CONTENT_IDS) {
+      const c = CONTENT_DE[id];
+      for (const value of [c.name, c.kindLabel, c.description, ...c.facts]) {
+        expect(value, id).not.toMatch(/\bBillion/);
+      }
+    }
+  });
+
   it('getContent returns the table for the requested language', () => {
     expect(getContent('earth', 'vi')).toBe(CONTENT_VI.earth);
     expect(getContent('earth', 'en')).toBe(CONTENT_EN.earth);
     expect(getContent('earth', 'ja')).toBe(CONTENT_JA.earth);
+    expect(getContent('earth', 'de')).toBe(CONTENT_DE.earth);
+    expect(getContent('earth', 'de').name).toBe('Erde');
   });
 
   it('labels Pluto as a dwarf planet and explains the 2006 reclassification', () => {
     expect(getContent('pluto', 'vi').kindLabel.toLowerCase()).toContain('hành tinh lùn');
     expect(getContent('pluto', 'en').kindLabel.toLowerCase()).toContain('dwarf planet');
     expect(getContent('pluto', 'ja').kindLabel).toContain('準惑星');
+    expect(getContent('pluto', 'de').kindLabel.toLowerCase()).toContain('zwergplanet');
     for (const lang of LANGS) {
       const c = getContent('pluto', lang);
       const text = [c.description, ...c.facts].join(' ');
@@ -74,7 +93,7 @@ describe('body content', () => {
       const text = [c.description, ...c.facts].join(' ');
       expect(text).toMatch(/2[.,]2/);
       expect(text).toMatch(/3[.,]2/);
-      expect(text).toMatch(/AU|au|đơn vị thiên văn|天文単位/);
+      expect(text).toMatch(/AU|au|đơn vị thiên văn|天文単位|astronomische/);
       expect(text).toMatch(lang === 'ja' ? /ケレス/ : /Ceres/);
     }
     expect(
@@ -157,6 +176,16 @@ describe('UI strings', () => {
     }
   });
 
+  it('German UI is translated', () => {
+    // Keys whose German value may equal English: a brand name, a unit symbol and the
+    // cognate 'Pause'.
+    const DE_SAME_AS_EN = new Set(['credits.support', 'unit.km', 'tour.pause']);
+    for (const [key, value] of Object.entries(UI_STRINGS.de)) {
+      if (DE_SAME_AS_EN.has(key)) continue;
+      expect(value, `de.${key}`).not.toBe(UI_STRINGS.en[key as keyof typeof UI_STRINGS.en]);
+    }
+  });
+
   it('contains every required key', () => {
     for (const key of REQUIRED_KEYS) {
       expect(Object.keys(UI_STRINGS.en)).toContain(key);
@@ -183,6 +212,7 @@ describe('UI strings', () => {
     expect(UI_STRINGS.en.notToScale.toLowerCase()).toContain('not to scale');
     expect(UI_STRINGS.vi.notToScale.toLowerCase()).toContain('tỉ lệ');
     expect(UI_STRINGS.ja.notToScale).toContain('縮尺');
+    expect(UI_STRINGS.de.notToScale.toLowerCase()).toContain('maßstab');
   });
 
   it('credits carry the required attributions', () => {
@@ -201,6 +231,7 @@ describe('UI strings', () => {
     expect(UI_STRINGS.en['credits.support']).toBe('Buy me a coffee');
     expect(UI_STRINGS.vi['credits.support']).toBe('Buy me a coffee');
     expect(UI_STRINGS.ja['credits.support']).toBe('Buy me a coffee');
+    expect(UI_STRINGS.de['credits.support']).toBe('Buy me a coffee');
   });
 });
 

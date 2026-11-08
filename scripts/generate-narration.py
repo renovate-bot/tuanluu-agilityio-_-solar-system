@@ -1,6 +1,6 @@
 """Generate Edge TTS narration mp3 files and the cue manifest.
 
-Reads src/data/tour/{vi,en,ja}.json, writes public/audio/narration/<stopId>.<lang>.mp3
+Reads src/data/tour/{vi,en,ja,de}.json, writes public/audio/narration/<stopId>.<lang>.mp3
 and public/audio/narration/manifest.json. edge_tts is imported lazily so the pure
 helpers (and their unit tests) work without it.
 """
@@ -17,7 +17,12 @@ TOUR_DIR = ROOT / "src" / "data" / "tour"
 OUT_DIR = ROOT / "public" / "audio" / "narration"
 MANIFEST_PATH = OUT_DIR / "manifest.json"
 
-VOICES = {"vi": "vi-VN-HoaiMyNeural", "en": "en-US-AvaNeural", "ja": "ja-JP-NanamiNeural"}
+VOICES = {
+    "vi": "vi-VN-HoaiMyNeural",
+    "en": "en-US-AvaNeural",
+    "ja": "ja-JP-NanamiNeural",
+    "de": "de-DE-KatjaNeural",
+}
 RETRY_DELAYS = (2, 4, 8)
 MP3_BITRATE = 48_000  # bits per second, used for the duration fallback
 

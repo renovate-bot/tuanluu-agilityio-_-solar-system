@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TOUR_STOPS } from '../../src/data/tour/stops';
+import de from '../../src/data/tour/de.json';
 import en from '../../src/data/tour/en.json';
 import ja from '../../src/data/tour/ja.json';
 import vi_ from '../../src/data/tour/vi.json';
@@ -15,7 +16,7 @@ import { estimateDurationMs, type NarrationManifest } from '../../src/tour/narra
 import { TOUR_GAP_MS, initialTour } from '../../src/tour/tourMachine';
 import { NARRATION_LOAD_TIMEOUT_MS, type NarrationResult } from '../../src/audio/audioEngine';
 
-const scripts = { vi: vi_, en, ja } as TourDeps['scripts'];
+const scripts = { vi: vi_, en, ja, de } as TourDeps['scripts'];
 
 function makeStore(muted: boolean): Store<AppState> {
   return createStore<AppState>({
@@ -283,6 +284,33 @@ describe('tour controller (audio)', () => {
     expect(t.audio.playNarration).toHaveBeenLastCalledWith('audio/narration/sun.ja.mp3');
     expect(t.store.get().tour).toMatchObject({ status: 'narrating', index: 1 });
     expect(t.tour.currentCue()?.text).toBe('sun 日本語。');
+    expect(t.rig.flyTo).toHaveBeenCalledTimes(1); // no new flight: same stop
+  });
+
+  it('switching to German mid-stop replays the same stop with the de clip and cues', async () => {
+    const manifest = manifestFor(10_000);
+    for (const stop of TOUR_STOPS) {
+      manifest.segments[stop.id].de = {
+        file: `audio/narration/${stop.id}.de.mp3`,
+        durationMs: 12_000,
+        cues: [{ startMs: 0, endMs: 12_000, text: `${stop.id} Deutsch.` }],
+      };
+    }
+    const t = setup({ muted: false, manifest });
+    t.tour.dispatch({ type: 'START' });
+    t.flights[0]!.done.resolve();
+    await flush();
+    t.plays[0]!.done.resolve('ended');
+    await vi.advanceTimersByTimeAsync(TOUR_GAP_MS);
+    t.flights[1]!.done.resolve(); // second stop: the Sun
+    await flush();
+    expect(t.store.get().tour).toMatchObject({ status: 'narrating', index: 1 });
+    expect(t.audio.playNarration).toHaveBeenLastCalledWith('audio/narration/sun.en.mp3');
+
+    t.store.set({ lang: 'de' });
+    expect(t.audio.playNarration).toHaveBeenLastCalledWith('audio/narration/sun.de.mp3');
+    expect(t.store.get().tour).toMatchObject({ status: 'narrating', index: 1 });
+    expect(t.tour.currentCue()?.text).toBe('sun Deutsch.');
     expect(t.rig.flyTo).toHaveBeenCalledTimes(1); // no new flight: same stop
   });
 

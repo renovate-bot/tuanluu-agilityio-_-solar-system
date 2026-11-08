@@ -53,3 +53,8 @@ Mọi task đã merge qua PR nên `main` trên GitHub đã cập nhật. Workflo
 ## 9. Tuỳ chọn: siết `.claude/settings.json`
 
 - [x] Sau khi xong, bỏ bớt quyền không còn cần (ví dụ `git push`, `gh pr merge`, `pip install`, `WebFetch`). Chi tiết từng quyền: `docs/ai-setup.md` mục 3. Thêm tính năng mới sau này: `docs/ai-setup.md` mục 10 và `docs/BACKLOG.md`.
+
+## 10. Tiếng Đức (de)
+
+- [ ] Nhờ người bản ngữ tiếng Đức đọc lại: chuỗi UI (`src/i18n/strings.ts`), nội dung 11 thiên thể (`src/data/content/de.ts`) và 14 kịch bản tour (`src/data/tour/de.json`). Bản tiếng Đức do AI dịch từ tiếng Anh (xưng "du"), chưa ai bản ngữ kiểm tra. Sửa chữ thì chạy lại `npm run narration` (giọng `de-DE-KatjaNeural`); commit mp3 và `manifest.json`.
+- [ ] Nghe thử các file `public/audio/narration/*.de.mp3` (14 file): phát âm tên riêng và con số, nhịp đọc, phụ đề khớp.

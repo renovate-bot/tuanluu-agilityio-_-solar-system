@@ -24,6 +24,7 @@ import { createScaledTimers } from './tour/scaledTimers';
 import type { NarrationManifest } from './tour/narration';
 import tourScriptsEn from './data/tour/en.json';
 import tourScriptsJa from './data/tour/ja.json';
+import tourScriptsDe from './data/tour/de.json';
 import tourScriptsVi from './data/tour/vi.json';
 import { TOUR_STOPS } from './data/tour/stops';
 import {
@@ -384,7 +385,7 @@ async function boot(): Promise<void> {
     audio,
     store,
     manifest,
-    scripts: { vi: tourScriptsVi, en: tourScriptsEn, ja: tourScriptsJa },
+    scripts: { vi: tourScriptsVi, en: tourScriptsEn, ja: tourScriptsJa, de: tourScriptsDe },
     timers: tourTimers,
     audioUrl: (file) => `${import.meta.env.BASE_URL}${file}`,
   });

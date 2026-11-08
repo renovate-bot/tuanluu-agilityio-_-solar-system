@@ -77,8 +77,14 @@ test('tapping Mars then immediately Jupiter ends on Jupiter (Review Focus 2)', a
     if (hasTouch) await page.touchscreen.tap(p!.x, p!.y);
     else await page.mouse.click(p!.x, p!.y);
   };
-  // A tap can be missed when software GL stalls a frame past the 350 ms tap limit: retry Mars.
+  // A tap can be missed when software GL stalls a frame past the 350 ms tap limit, or can land
+  // on a body whose orbit crosses Mars on screen. Retry Mars, from the overview after a mis-pick
+  // (focused on another body, Mars may be behind the camera and cannot be projected).
   await expect(async () => {
+    if ((await state(page)).view !== 'overview') {
+      await page.getByTestId('back').dispatchEvent('click');
+      await expect.poll(async () => (await state(page)).view, { timeout: POLL }).toBe('overview');
+    }
     await tap('mars');
     await expect.poll(async () => (await state(page)).selected, { timeout: 8_000 }).toBe('mars');
   }).toPass({ timeout: 40_000 });

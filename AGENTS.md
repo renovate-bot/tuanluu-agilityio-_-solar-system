@@ -4,7 +4,7 @@ Single source of truth for every AI agent working in this repo (Claude Code, Cod
 
 ## Purpose
 
-Solar System Explorer: a mobile-first, multilingual (vi/en/ja) three.js web app showing a realistic, animated Solar System with fly-to inspection, info panels, ambient audio and a narrated auto Tour Guide. Stack: Vite, strict TypeScript, vanilla DOM UI, Vitest, Playwright. Pure logic (scale math, tour state machine, i18n, prefs, quality tiers) lives in three.js-free modules that are unit-tested; rendering modules consume it. Pre-generated assets (WebP textures, Edge TTS mp3 + cue manifest) are committed, so build and CI need no network.
+Solar System Explorer: a mobile-first, multilingual (vi/en/ja/de) three.js web app showing a realistic, animated Solar System with fly-to inspection, info panels, ambient audio and a narrated auto Tour Guide. Stack: Vite, strict TypeScript, vanilla DOM UI, Vitest, Playwright. Pure logic (scale math, tour state machine, i18n, prefs, quality tiers) lives in three.js-free modules that are unit-tested; rendering modules consume it. Pre-generated assets (WebP textures, Edge TTS mp3 + cue manifest) are committed, so build and CI need no network.
 
 ## Key documents
 
@@ -30,7 +30,7 @@ Solar System Explorer: a mobile-first, multilingual (vi/en/ja) three.js web app 
 - `.github/workflows/` `ci.yml` (PR checks) and `deploy.yml` (GitHub Pages on each merge to `main`).
 - `docs/` progress (`progress/t<NN>.md`), `decisions/` (ADRs), `KNOWN_ISSUES.md`, `BACKLOG.md`, `HUMAN_REVIEW.md`, `ai-setup.md` (both Vietnamese), `screenshots/`, `perf-results.json`, `superpowers/` (spec, plan).
 - `scripts/` texture fetch, narration generation (+ its pytest), budget check.
-- `src/config/` scale and time constants; `src/data/` body data, localized content (vi/en/ja), tour stops (see `src/data/CLAUDE.md` to add a body); `src/i18n/`; `src/state/` store and prefs; `src/quality/` tiers and FPS monitor.
+- `src/config/` scale and time constants; `src/data/` body data, localized content (vi/en/ja/de), tour stops (see `src/data/CLAUDE.md` to add a body); `src/i18n/`; `src/state/` store and prefs; `src/quality/` tiers and FPS monitor.
 - `src/tour/` state machine, narration, controller; `src/scene/` renderer, sky, postfx, textures, loop; `src/bodies/` planets, sun, earth, rings, belt, orbits.
 - `src/camera/` framing and rig; `src/ui/labelLayout.ts` label placement; `src/interaction/` picker; `src/audio/` engine, ambient, whoosh; `src/ui/` layout, styles, panels, controls; `src/debug/` e2e API.
 - `public/textures/`, `public/audio/narration/` committed assets and manifests.
@@ -42,8 +42,8 @@ Solar System Explorer: a mobile-first, multilingual (vi/en/ja) three.js web app 
 - TypeScript `strict: true`, `noUncheckedIndexedAccess: true`. No `any` without an eslint-disable comment explaining why.
 - No UI framework, no state library, no backend.
 - Body data ONLY in `src/data/`. Scale/time constants ONLY in `src/config/scale.ts`. Quality numbers ONLY in `src/quality/tiers.ts`.
-- Supported locales are exactly `SUPPORTED_LANGS` in `src/data/types.ts`: `vi`, `en`, `ja` (Korean, German, Russian are deferred until requested). A locale ships only when its UI strings, every `ContentId`, all 14 tour scripts, subtitles and narration are complete.
-- Every user-visible string goes through `t()` or the content modules and exists in every supported locale. English is the canonical translation source; the Japanese text is AI-translated and not yet proofread by a native speaker.
+- Supported locales are exactly `SUPPORTED_LANGS` in `src/data/types.ts`: `vi`, `en`, `ja`, `de` (Korean and Russian are deferred until requested). A locale ships only when its UI strings, every `ContentId`, all 14 tour scripts, subtitles and narration are complete.
+- Every user-visible string goes through `t()` or the content modules and exists in every supported locale. English is the canonical translation source; the Japanese and German texts are AI-translated and not yet proofread by native speakers.
 - Language: a valid saved `sse.lang` wins; otherwise the first `navigator.languages` entry whose primary subtag is supported (case-insensitive, `ja-JP` -> `ja`), else `en`. The `文A` button opens the language picker modal (`src/ui/languagePicker.ts`).
 - Sound is muted by default (`sse.muted` absent means muted). Audio starts only after a user gesture.
 - Tour autostarts once: only when `sse.tourSeen` is absent; the flag is set at tour start.
@@ -53,7 +53,7 @@ Solar System Explorer: a mobile-first, multilingual (vi/en/ja) three.js web app 
 - Tap targets are at least 44x44 CSS px.
 - Performance: at least 30 FPS on a mid-range phone, 55 FPS on a laptop iGPU; initial load (JS + low textures + sky) at most 8 MB; JS at most 800 KB gzip; pixel ratio at most 2 (1.5 on `low`).
 - Quality never drops below: textured bodies + sun light + sun bloom.
-- Voices: `vi-VN-HoaiMyNeural`, `en-US-AvaNeural`, `ja-JP-NanamiNeural` (Edge TTS, verified with `edge_tts.list_voices()`).
+- Voices: `vi-VN-HoaiMyNeural`, `en-US-AvaNeural`, `ja-JP-NanamiNeural`, `de-DE-KatjaNeural` (Edge TTS, verified with `edge_tts.list_voices()`).
 - Credits must show: "Textures: Solar System Scope (CC BY 4.0)" linking https://www.solarsystemscope.com/textures/; NASA as data source; "Narration voice generated with Microsoft Edge TTS".
 - UI disclaimer in every language: sizes and distances are not to scale.
 - Code, comments, commits, `AGENTS.md`/`CLAUDE.md` are English. `docs/ai-setup.md` and `docs/HUMAN_REVIEW.md` are Vietnamese.
